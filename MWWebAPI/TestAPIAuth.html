@@ -1,0 +1,38 @@
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head runat="server">
+ <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+
+ <title>Machine Works, LLC.</title>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+<body>
+<script>
+
+var userModel = {};
+userModel.userName = "atran";
+userModel.password = "password";
+userModel.confirmPassword = 'password';
+
+var jsonData = JSON.stringify(userModel);
+
+ $.ajax({
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                url: 'http://localhost:23815/api/account/register',
+                data: jsonData,
+                success: function (data) {
+                    if (data.ResponseCode == 0)
+                        $("#lblMessage").html('Template Saved.');
+                    else
+                        $("#lblMessage").html(data.ResponseText);
+                },
+                error: function (result) {
+                    if (result.statusText != 'OK') {
+                        $("#lblMessage").html('Cannot save Set up sheet. ' + result.statusText);
+                        $("#dialogMessage").dialog("open");
+                    }
+                }
+            });
+
+</script>
+</body>
