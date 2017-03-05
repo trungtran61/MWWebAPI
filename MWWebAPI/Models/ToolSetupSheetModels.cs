@@ -156,7 +156,7 @@ namespace MWWebAPI.Models
         public string ModifiedBy { get; set; }
     }
 
-    public class ConvertProgramSaveRequest
+    public class ProgramSaveRequest
     {
         public string Program { get; set; }
         public string MachineID { get; set; }

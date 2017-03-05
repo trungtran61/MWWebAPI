@@ -9,6 +9,7 @@ using System.Text;
 using System.IO;
 using MWWebAPI.Models;
 using System.Text.RegularExpressions;
+using System.Web.Hosting;
 
 namespace MWWebAPI.DBRepository
 {
@@ -559,7 +560,7 @@ namespace MWWebAPI.DBRepository
             return dbResponse;
         }
 
-        public int SaveConvertedProgram(ConvertProgramSaveRequest convertProgramSaveRequest)
+        public int SaveConvertedProgram(ProgramSaveRequest convertProgramSaveRequest)
         {
             int newSetUpSheetID = 0;
 
@@ -591,6 +592,13 @@ namespace MWWebAPI.DBRepository
             }
 
             return newSetUpSheetID;
+        }
+
+        public void SaveProgram(ProgramSaveRequest programSaveRequest)
+        {           
+            string filePath = 
+                string.Format("{0}\\tss_{1}.txt", HostingEnvironment.MapPath("~\\UnprovenPrograms"), programSaveRequest.SetUpSheetID);
+            File.WriteAllText(filePath, programSaveRequest.Program);
         }
 
         public DBResponse SaveToolSetupGroup(ToolSetupGroupRequest tooSetupGroupRequest)
@@ -772,7 +780,7 @@ namespace MWWebAPI.DBRepository
                         StringBuilder sbLines = new StringBuilder();
                         for (int i = 0; i < lines.Count(); i++)
                         {
-                            if (i == 0) lines[0] = "N" + twoDigitN;
+                            //if (i == 0) lines[0] = "N" + twoDigitN;
                             Match match = Regex.Match(lines[i], @"[T][0-9]{4}");
                             if (match.Success)
                             {

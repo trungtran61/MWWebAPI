@@ -135,11 +135,19 @@ namespace MWWebAPI.Controllers
 
         [Route("SaveConvertedProgram")]
         [HttpPost]
-        public int SaveConvertedProgram(ConvertProgramSaveRequest convertProgramSaveRequest)
+        public int SaveConvertedProgram(ProgramSaveRequest convertProgramSaveRequest)
         {
 
             int newSetupSheetID = ToolInventoryRepo.SaveConvertedProgram(convertProgramSaveRequest);
             return newSetupSheetID;            
+        }
+
+        [Route("SaveProgram")]
+        [HttpPost]
+        public int SaveProgram(ProgramSaveRequest convertProgramSaveRequest)
+        {
+            ToolInventoryRepo.SaveProgram(convertProgramSaveRequest);
+            return 0;          
         }
 
         [Route("GetSearchResults/{category}/{term?}")]
