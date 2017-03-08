@@ -6,6 +6,7 @@ using MWWebAPI.DBRepository;
 using System.Web;
 using System.Linq;
 using System;
+using System.IO;
 
 namespace MWWebAPI.Controllers
 {
@@ -142,6 +143,15 @@ namespace MWWebAPI.Controllers
             return newSetupSheetID;            
         }
 
+        [Route("UploadProvenProgram")]
+        [HttpPost]
+        public int UploadProvenProgram(UploadProgramRequest uploadProgramRequest)
+        {
+
+            int newSetupSheetID = ToolInventoryRepo.UploadProvenProgram(uploadProgramRequest);
+            return newSetupSheetID;
+        }
+
         [Route("SaveProgram")]
         [HttpPost]
         public int SaveProgram(ProgramSaveRequest convertProgramSaveRequest)
@@ -209,6 +219,22 @@ namespace MWWebAPI.Controllers
         public string ConvertProgram(ConvertProgramRequest convertProgramRequest)
         {
             return ToolInventoryRepo.ConvertProgram(convertProgramRequest);
-        }       
+        }
+
+        [Route("UploadProgram")]
+        [HttpPost]
+        public void UploadProgram()
+        {
+            if (HttpContext.Current.Request.Files.AllKeys.Any())
+            {
+                var httpPostedFile = HttpContext.Current.Request.Files["UploadedImage"];
+
+                if (httpPostedFile != null)
+                {
+                    var fileSavePath = Path.Combine(HttpContext.Current.Server.MapPath("~/ProvenPrograms"), httpPostedFile.FileName);
+                    httpPostedFile.SaveAs(fileSavePath);
+                }
+            }
+        }
     } 
 }

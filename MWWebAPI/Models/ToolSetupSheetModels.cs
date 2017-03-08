@@ -164,6 +164,13 @@ namespace MWWebAPI.Models
         public string ModifiedBy { get; set; }
     }
 
+    public class UploadProgramRequest
+    {
+        public int SetUpSheetID { get; set; }
+        public bool UseExistingSheet { get; set; }
+        public string UploadedProgramText { get; set; }        
+        public string ModifiedBy { get; set; }
+    }
     public class ConvertProgramRequest
     {
         public string Program { get; set; }

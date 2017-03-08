@@ -561,7 +561,7 @@ namespace MWWebAPI.DBRepository
         }
 
         public int SaveConvertedProgram(ProgramSaveRequest convertProgramSaveRequest)
-        {
+        {            
             int newSetUpSheetID = 0;
 
             using (SqlConnection con = new SqlConnection(MWConnectionString))
@@ -572,7 +572,9 @@ namespace MWWebAPI.DBRepository
                     con.Open();
                     cmd.Parameters.Add("@UserName", SqlDbType.VarChar, 20).Value = convertProgramSaveRequest.ModifiedBy;
                     cmd.Parameters.Add("@ToolSetupSheetID", SqlDbType.Int).Value = convertProgramSaveRequest.SetUpSheetID;
-                    newSetUpSheetID = Convert.ToInt32(cmd.ExecuteScalar());
+                    cmd.Parameters.Add("@NewToolSetupSheetID", SqlDbType.Int).Direction = ParameterDirection.ReturnValue;
+                    cmd.ExecuteNonQuery();
+                    newSetUpSheetID = (int)cmd.Parameters["@NewToolSetupSheetID"].Value;
                 }               
             }
 
@@ -594,6 +596,36 @@ namespace MWWebAPI.DBRepository
             return newSetUpSheetID;
         }
 
+        public int UploadProvenProgram(UploadProgramRequest uploadProgramRequest)
+        {
+            int newSetUpSheetID = uploadProgramRequest.SetUpSheetID;
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(MWConnectionString))
+                {
+                    using (SqlCommand cmd = new SqlCommand("spUploadProvenProgram", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        con.Open();
+                        cmd.Parameters.Add("@ToolSetupSheetID", SqlDbType.Int).Value = uploadProgramRequest.SetUpSheetID;
+                        cmd.Parameters.Add("@UseExistingSheet", SqlDbType.Bit).Value = uploadProgramRequest.UseExistingSheet;
+                        cmd.Parameters.Add("@UploadedProgramText", SqlDbType.VarChar).Value = uploadProgramRequest.UploadedProgramText;
+                        cmd.Parameters.Add("@UserName", SqlDbType.VarChar, 20).Value = uploadProgramRequest.ModifiedBy;
+                        cmd.Parameters.Add("@NewToolSetupSheetID", SqlDbType.Int).Direction = ParameterDirection.ReturnValue;
+                        cmd.ExecuteNonQuery();
+                        newSetUpSheetID = (int)cmd.Parameters["@NewToolSetupSheetID"].Value;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+                
+
+            return newSetUpSheetID;
+        }
         public void SaveProgram(ProgramSaveRequest programSaveRequest)
         {           
             string filePath = 
