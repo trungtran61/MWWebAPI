@@ -30,19 +30,18 @@ namespace MWWebAPI.Controllers
             return retSearchResult;
         }
 
-        [Route("lookup/{category}/{term?}")]
-        public IEnumerable<Lookup> GetByCategory(string category, string term = "")
+        [Route("lookup")]
+        [HttpPost]
+        public IEnumerable<Lookup> GetByCategory(LookUpRequest lookUpRequest)
         {
-            // URL can't handle period so use | instead
-            term = term.Replace('|', '.');
-
-            return ToolInventoryRepo.GetLookupByCategory(category, term);
+            return ToolInventoryRepo.GetLookupByCategory(lookUpRequest.Category, lookUpRequest.SearchTerm);
         }
 
-        [Route("GetCuttingMethodsWithTemplate/{term?}")]
-        public IEnumerable<CuttingMethodTemplate> GetCuttingMethodsWithTemplate(string term = "")
+        [Route("GetCuttingMethodsWithTemplate")]
+        [HttpPost]
+        public IEnumerable<CuttingMethodTemplate> GetCuttingMethodsWithTemplate(ToolSetupSearchRequest toolSetupSearchRequest)
         {
-            return ToolInventoryRepo.GetCuttingMethodsWithTemplate(term);
+            return ToolInventoryRepo.GetCuttingMethodsWithTemplate(toolSetupSearchRequest.SearchTerm);
         }
 
         [Route("cuttingmethodtemplate/update")]

@@ -40,6 +40,10 @@ namespace MWWebAPI.Models
         public string ToolHolder1ID { get; set; }
         public string ToolHolder2ID { get; set; }
         public string ToolHolder3ID { get; set; }
+        public string ToolImage { get; set; }
+        public string ToolHolder1Image { get; set; }
+        public string ToolHolder2Image { get; set; }
+        public string ToolHolder3Image { get; set; }
         public string Comment { get; set; }
         public string ModifiedBy { get; set; }
     }
@@ -183,4 +187,9 @@ namespace MWWebAPI.Models
         public string SearchTerm { get; set; }
     }
 
+    public class LookUpRequest
+    {
+        public string Category { get; set; }
+        public string SearchTerm { get; set; }
+    }
 }

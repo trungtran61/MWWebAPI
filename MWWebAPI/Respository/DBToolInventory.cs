@@ -248,6 +248,10 @@ namespace MWWebAPI.DBRepository
                             toolSetup.ToolHolder1ID = drToolSetup["ToolHolder1ID"].ToString();
                             toolSetup.ToolHolder2ID = drToolSetup["ToolHolder2ID"].ToString();
                             toolSetup.ToolHolder3ID = drToolSetup["ToolHolder3ID"].ToString();
+                            toolSetup.ToolImage = "/imgLibrary/" + drToolSetup["ToolImage"].ToString();
+                            toolSetup.ToolHolder1Image = "/imgLibrary/" + drToolSetup["ToolHolder1Image"].ToString();
+                            toolSetup.ToolHolder2Image = "/imgLibrary/" + drToolSetup["ToolHolder2Image"].ToString();
+                            toolSetup.ToolHolder3Image = "/imgLibrary/" + drToolSetup["ToolHolder3Image"].ToString();
                             lstToolSetup.Add(toolSetup);
                         }
                         toolSetupSheet.ToolsSetUp = lstToolSetup;
