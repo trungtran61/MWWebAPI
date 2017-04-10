@@ -231,6 +231,7 @@ namespace MWWebAPI.DBRepository
                             toolSetup.Comment = drToolSetup["Comment"].ToString();
                             toolSetup.Snippet = drToolSetup["Snippet"].ToString();
                             toolSetup.ToolDesc = drToolSetup["ToolDesc"].ToString();
+                            toolSetup.ToolItem = drToolSetup["ToolItem"].ToString();
                             toolSetup.ToolName = drToolSetup["ToolName"].ToString();
                             toolSetup.ToolHolder1Item = drToolSetup["ToolHolder1Item"].ToString();
                             toolSetup.ToolHolder2Item = drToolSetup["ToolHolder2Item"].ToString();
