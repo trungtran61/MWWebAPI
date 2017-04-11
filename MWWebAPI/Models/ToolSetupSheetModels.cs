@@ -182,6 +182,11 @@ namespace MWWebAPI.Models
         public string ToMachineID { get; set; }
     }
 
+    public class SaveCodeColumnsRequest
+    {
+        public string Code { get; set; }
+        public string Columns { get; set; }        
+    }
     public class ToolSetupSearchRequest
     {
         public string SearchTerm { get; set; }
@@ -191,5 +196,23 @@ namespace MWWebAPI.Models
     {
         public string Category { get; set; }
         public string SearchTerm { get; set; }
+    }
+
+    public class ToolInventoryColumn
+    {
+        public string Name { get; set; }
+        public string Header { get; set; }
+        public bool Searchable { get; set; }
+        public int Sequence { get; set; }
+        public string RelatedTable { get; set; }
+        public string RelatedIDField { get; set; }
+        public string RelatedTextField { get; set; }
+    }
+
+    public class ToolInventoryCodeColumn
+    {
+        public string Name { get; set; }
+        public string Header { get; set; }
+        public bool Show { get; set; }        
     }
 }

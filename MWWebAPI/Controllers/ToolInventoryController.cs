@@ -235,5 +235,25 @@ namespace MWWebAPI.Controllers
                 }
             }
         }
+
+        [Route("GetToolInventoryColumns")]
+        public List<ToolInventoryColumn> GetToolInventoryColumns(string code)
+        {
+            return ToolInventoryRepo.GetToolInventoryColumns();
+        }
+
+        [Route("GetToolInventoryColumns/{code}")]
+        public List<ToolInventoryCodeColumn> GetToolInventoryColumnsByCode(string code)
+        {
+            return ToolInventoryRepo.GetToolInventoryColumnsByCode(code);
+           
+        }
+
+        [Route("SaveToolInventoryCodeColumns")]
+        [HttpPost]
+        public DBResponse SaveToolInventoryCodeColumns(SaveCodeColumnsRequest saveCodeColumnsRequest)
+        {
+            return ToolInventoryRepo.SaveToolInventoryCodeColumns(saveCodeColumnsRequest);
+        }
     } 
 }

@@ -147,6 +147,70 @@ namespace MWWebAPI.DBRepository
             return lookups;
         }
 
+        public List<ToolInventoryColumn> GetToolInventoryColumns()
+        {
+            List<ToolInventoryColumn> toolInventoryColumns = new List<ToolInventoryColumn>();
+            using (SqlConnection conn = new SqlConnection(MWConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.CommandText = "spGetToolInventoryColumns";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Connection = conn;
+                    conn.Open();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            ToolInventoryColumn toolInventoryColumn = new ToolInventoryColumn
+                            {
+                                Name = reader["ColumnName"].ToString(),
+                                Header = reader["ColumnHeader"].ToString(),
+                                Searchable = Convert.ToBoolean(reader["Searchable"].ToString()),
+                                Sequence = Convert.ToInt16(reader["Sequence"].ToString()),
+                                RelatedTable = reader["RelatedTable"].ToString(),
+                                RelatedIDField = reader["RelatedIDField"].ToString(),
+                                RelatedTextField = reader["RelatedTextField"].ToString()
+                            };
+                            toolInventoryColumns.Add(toolInventoryColumn);
+                        }
+                    }
+                }
+            }
+            return toolInventoryColumns;
+        }
+
+        public List<ToolInventoryCodeColumn> GetToolInventoryColumnsByCode(string code)
+        {
+            List<ToolInventoryCodeColumn> toolInventoryColumns = new List<ToolInventoryCodeColumn>();
+            using (SqlConnection conn = new SqlConnection(MWConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.CommandText = "spGetToolInventoryColumnsByCode";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@code", SqlDbType.VarChar, 50).Value = code;
+                    cmd.Connection = conn;
+                    conn.Open();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            ToolInventoryCodeColumn toolInventoryColumn = new ToolInventoryCodeColumn
+                            {
+                                Name = reader["ColumnName"].ToString(),
+                                Header = reader["ColumnHeader"].ToString(),
+                                Show = Convert.ToBoolean(Convert.ToInt16(reader["Show"].ToString()))                                
+                            };
+                            toolInventoryColumns.Add(toolInventoryColumn);
+                        }
+                    }
+                }
+            }
+            return toolInventoryColumns;
+        }
         public ToolSetupSheet GetToolSetupSheet(int setupSheetId)
         {
             ToolSetupSheet toolSetupSheet = new ToolSetupSheet();
@@ -879,6 +943,47 @@ namespace MWWebAPI.DBRepository
                 throw new Exception(ex.Message);
             }
             return setupSheetHeaders;            
+        }
+
+        //SaveToolInventoryCodeColumns
+
+        public DBResponse SaveToolInventoryCodeColumns(SaveCodeColumnsRequest saveCodeColumnsRequest)
+        {
+            DBResponse dbResponse = new DBResponse();
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(MWConnectionString))
+                {
+                    using (SqlCommand cmd = new SqlCommand("spSaveToolInventoryCodeColumns", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Add("@Code", SqlDbType.VarChar, 50).Value = saveCodeColumnsRequest.Code;
+                        cmd.Parameters.Add("@Columns", SqlDbType.VarChar).Value = saveCodeColumnsRequest.Columns;
+                        con.Open();
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        dbResponse.RecordsAffected = rowsAffected;
+
+                        if (rowsAffected > 0)
+                        {
+                            dbResponse.ReturnCode = 0;
+                        }
+                        else
+                        {
+                            dbResponse.ReturnCode = -1;
+                            dbResponse.Message = "No update";
+                        }
+                    }
+                    con.Close();
+                }
+            }
+            catch
+            {
+                dbResponse.ReturnCode = -1;
+                throw;
+            }
+
+            return dbResponse;
         }
         public string ConvertProgram(ConvertProgramRequest convertProgramRequest)
         {
