@@ -18,7 +18,7 @@ namespace MWWebAPI.DBRepository
         public string[] GetCuttingMethodTemplate(string cuttingMethod)
         {
             List<string> retTemplate = new List<string>();
-            
+
             using (SqlConnection con = new SqlConnection(MWConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand("spGetCuttingMethodTemplate", con))
@@ -32,7 +32,7 @@ namespace MWWebAPI.DBRepository
                     {
                         string Template = reader["Template"].ToString();
                         string[] lines = Template.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.None);
-                        
+
                         StringBuilder sbLines = new StringBuilder();
                         for (int i = 0; i < lines.Count(); i++)
                         {
@@ -57,7 +57,7 @@ namespace MWWebAPI.DBRepository
                     using (SqlCommand cmd = new SqlCommand("spUpdateCuttingMethodTemplate", con))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.Add("@CuttingMethod", SqlDbType.VarChar,50).Value = cuttingMethodTemplate.CuttingMethod;
+                        cmd.Parameters.Add("@CuttingMethod", SqlDbType.VarChar, 50).Value = cuttingMethodTemplate.CuttingMethod;
                         cmd.Parameters.Add("@Template", SqlDbType.VarChar).Value = cuttingMethodTemplate.Template;
                         con.Open();
                         int rowsAffected = cmd.ExecuteNonQuery();
@@ -82,7 +82,7 @@ namespace MWWebAPI.DBRepository
                 throw;
             }
 
-            return dbResponse;         
+            return dbResponse;
         }
 
         public List<CuttingMethodTemplate> GetCuttingMethodsWithTemplate(string term)
@@ -181,6 +181,87 @@ namespace MWWebAPI.DBRepository
             return toolInventoryColumns;
         }
 
+        public ToolInventorySearchResults ToolInventorySearch(ToolInventorySearch toolInventorySearch)
+        {
+            ToolInventorySearchResults toolInventorySearchResults = new ToolInventorySearchResults();
+            bool firstRecord = true;
+            toolInventorySearchResults.SearchResults = new List<ToolInventorySearchResult>();
+            using (SqlConnection conn = new SqlConnection(MWConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.CommandText = "ToolInventorySearch";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    if (toolInventorySearch.Name != string.Empty)
+                        cmd.Parameters.Add("@Name", SqlDbType.VarChar, 50).Value = toolInventorySearch.Name;
+                    if (toolInventorySearch.CategoryID != string.Empty)
+                        cmd.Parameters.Add("@CategoryID", SqlDbType.Int).Value = toolInventorySearch.CategoryID;
+                    if (toolInventorySearch.SortColumn != string.Empty)
+                        cmd.Parameters.Add("@SortColumn", SqlDbType.VarChar, 50).Value = toolInventorySearch.SortColumn;
+                    if (toolInventorySearch.SortDirection != string.Empty)
+                        cmd.Parameters.Add("@SortDirection", SqlDbType.VarChar, 50).Value = toolInventorySearch.SortDirection;
+                    cmd.Parameters.Add("@PageNumber", SqlDbType.Int).Value = toolInventorySearch.PageNumber;
+                    cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = toolInventorySearch.PageSize;
+
+                    cmd.Connection = conn;
+                    conn.Open();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            if (firstRecord)
+                            {
+                                firstRecord = false;
+                                toolInventorySearchResults.RecordCount = Convert.ToInt16(reader["RecordCount"].ToString());
+                            }
+
+                            toolInventorySearchResults.SearchResults.Add(new ToolInventorySearchResult
+                            {
+                                Name = reader["Name"].ToString(),
+                                ItemNumber = reader["ItemNumber"].ToString(),
+                                CategoryName = reader["CategoryName"].ToString()
+                            }
+                            );
+                        }
+                    }
+                }
+            }
+
+            return toolInventorySearchResults;
+        }
+        //
+        public List<ToolInventoryColumn> GetSelectedToolInventoryColumns(string code)
+        {
+            List<ToolInventoryColumn> toolInventoryColumns = new List<ToolInventoryColumn>();
+            using (SqlConnection conn = new SqlConnection(MWConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.CommandText = "spGetSelectedToolInventoryColumns";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@code", SqlDbType.VarChar, 50).Value = code;
+                    cmd.Connection = conn;
+                    conn.Open();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            ToolInventoryColumn toolInventoryColumn = new ToolInventoryColumn
+                            {
+                                Name = reader["ColumnName"].ToString(),
+                                Header = reader["ColumnHeader"].ToString(),
+                                InputType = reader["InputType"].ToString(),
+                                UISize = Convert.ToInt16(reader["UISize"].ToString())
+                            };
+                            toolInventoryColumns.Add(toolInventoryColumn);
+                        }
+                    }
+                }
+            }
+            return toolInventoryColumns;
+        }
         public List<ToolInventoryCodeColumn> GetToolInventoryColumnsByCode(string code)
         {
             List<ToolInventoryCodeColumn> toolInventoryColumns = new List<ToolInventoryCodeColumn>();
@@ -202,7 +283,7 @@ namespace MWWebAPI.DBRepository
                             {
                                 Name = reader["ColumnName"].ToString(),
                                 Header = reader["ColumnHeader"].ToString(),
-                                Show = Convert.ToBoolean(Convert.ToInt16(reader["Show"].ToString()))                                
+                                Show = Convert.ToBoolean(Convert.ToInt16(reader["Show"].ToString()))
                             };
                             toolInventoryColumns.Add(toolInventoryColumn);
                         }
@@ -366,7 +447,7 @@ namespace MWWebAPI.DBRepository
                                 sMachine = toolSetupSheet.Machine;
                                 break;
                         }
-                        
+
                         cmd.Parameters.Add("@Machine", SqlDbType.VarChar, 50).Value = sMachine;
                         cmd.Parameters.Add("@ProgramNumber", SqlDbType.VarChar, 20).Value = toolSetupSheet.ProgramNumber;
                         cmd.Parameters.Add("@ProgramLocation", SqlDbType.VarChar, 50).Value = toolSetupSheet.ProgramLocation;
@@ -542,12 +623,12 @@ namespace MWWebAPI.DBRepository
                     dbResponse.RecordsAffected = cmd.ExecuteNonQuery();
                     con.Close();
                     dbResponse.ReturnCode = 0;
-                }               
+                }
             }
             return dbResponse;
         }
 
-        public List<ConversionRule> GetConversionRules (string FromMachineId, string ToMachineId)
+        public List<ConversionRule> GetConversionRules(string FromMachineId, string ToMachineId)
         {
             List<ConversionRule> ConversionRules = new List<ConversionRule>();
 
@@ -564,7 +645,7 @@ namespace MWWebAPI.DBRepository
                     conn.Open();
 
                     SqlDataReader reader = cmd.ExecuteReader();
-                    
+
                     while (reader.Read())
                     {
                         ConversionRule oConversionRule = new ConversionRule();
@@ -572,7 +653,7 @@ namespace MWWebAPI.DBRepository
                         oConversionRule.FromSnippet = reader["FromSnippet"].ToString();
                         oConversionRule.ToSnippet = reader["ToSnippet"].ToString();
                         ConversionRules.Add(oConversionRule);
-                    }                    
+                    }
                 }
             }
 
@@ -630,7 +711,7 @@ namespace MWWebAPI.DBRepository
         }
 
         public int SaveConvertedProgram(ProgramSaveRequest convertProgramSaveRequest)
-        {            
+        {
             int newSetUpSheetID = 0;
 
             using (SqlConnection con = new SqlConnection(MWConnectionString))
@@ -644,7 +725,7 @@ namespace MWWebAPI.DBRepository
                     cmd.Parameters.Add("@NewToolSetupSheetID", SqlDbType.Int).Direction = ParameterDirection.ReturnValue;
                     cmd.ExecuteNonQuery();
                     newSetUpSheetID = (int)cmd.Parameters["@NewToolSetupSheetID"].Value;
-                }               
+                }
             }
 
             using (SqlConnection con = new SqlConnection(MWConnectionString))
@@ -691,13 +772,13 @@ namespace MWWebAPI.DBRepository
             {
                 throw;
             }
-                
+
 
             return newSetUpSheetID;
         }
         public void SaveProgram(ProgramSaveRequest programSaveRequest)
-        {           
-            string filePath = 
+        {
+            string filePath =
                 string.Format("{0}\\tss_{1}.txt", HostingEnvironment.MapPath("~\\UnprovenPrograms"), programSaveRequest.SetUpSheetID);
             File.WriteAllText(filePath, programSaveRequest.Program);
         }
@@ -759,24 +840,24 @@ namespace MWWebAPI.DBRepository
         {
             List<string> retResults = new List<string>();
             string sStoredProc = "spGetLookupValues";
-            
-                using (SqlConnection con = new SqlConnection(MWConnectionString))
-                {
-                    using (SqlCommand cmd = new SqlCommand(sStoredProc, con))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.Add("@Category", SqlDbType.VarChar, 100).Value = category;
-                        con.Open();
-                        SqlDataReader reader = cmd.ExecuteReader();
 
-                        while (reader.Read())
-                        {
-                            retResults.Add(string.Format("{0}|{1}", reader["Name"], reader["Description"]));
-                        }
+            using (SqlConnection con = new SqlConnection(MWConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(sStoredProc, con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@Category", SqlDbType.VarChar, 100).Value = category;
+                    con.Open();
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        retResults.Add(string.Format("{0}|{1}", reader["Name"], reader["Description"]));
                     }
-                    con.Close();                    
                 }
-            
+                con.Close();
+            }
+
             return retResults;
         }
 
@@ -928,8 +1009,8 @@ namespace MWWebAPI.DBRepository
                                 new ToolSetupSheetHeader
                                 {
                                     ID = Convert.ToInt32(reader["ID"].ToString()),
-                                //PartName = reader["partname"].ToString(),
-                                PartNumber = reader["partnumber"].ToString(),
+                                    //PartName = reader["partname"].ToString(),
+                                    PartNumber = reader["partnumber"].ToString(),
                                     Revision = reader["revision"].ToString(),
                                     Operation = reader["operation"].ToString()
                                 });
@@ -942,7 +1023,7 @@ namespace MWWebAPI.DBRepository
             {
                 throw new Exception(ex.Message);
             }
-            return setupSheetHeaders;            
+            return setupSheetHeaders;
         }
 
         //SaveToolInventoryCodeColumns
@@ -1047,7 +1128,7 @@ namespace MWWebAPI.DBRepository
             return line;
         }
         public void RefreshLookupCaches()
-        {            
+        {
             RefreshLookupCache("Unit");
             RefreshLookupCache("MaterialType");
             RefreshLookupCache("MaterialForm");

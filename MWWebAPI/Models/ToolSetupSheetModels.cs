@@ -207,6 +207,10 @@ namespace MWWebAPI.Models
         public string RelatedTable { get; set; }
         public string RelatedIDField { get; set; }
         public string RelatedTextField { get; set; }
+        public string InputType { get; set; }
+        public int UISize { get; set; }
+        public bool Show { get; set; }
+
     }
 
     public class ToolInventoryCodeColumn
@@ -214,5 +218,29 @@ namespace MWWebAPI.Models
         public string Name { get; set; }
         public string Header { get; set; }
         public bool Show { get; set; }        
+    }
+
+    public class ToolInventorySearch
+    {
+        public string Name { get; set; }
+        public string ItemNumber { get; set; }
+        public string CategoryID { get; set; }
+        public int PageNumber { get; set; } = 1;
+        public int PageSize { get; set; } = 25;
+        public string SortColumn { get; set; }
+        public string SortDirection { get; set; }
+    }
+
+    public class ToolInventorySearchResult
+    {
+        public string Name { get; set; }
+        public string ItemNumber { get; set; }
+        public string CategoryName { get; set; }        
+    }
+
+    public class ToolInventorySearchResults
+    {
+        public List<ToolInventorySearchResult> SearchResults { get; set; }
+        public int RecordCount { get; set; }
     }
 }
