@@ -187,6 +187,12 @@ namespace MWWebAPI.Models
         public string Code { get; set; }
         public string Columns { get; set; }        
     }
+
+    public class CopyCodeColumnsRequest
+    {
+        public string Code { get; set; }
+        public string CopyToCode { get; set; }
+    }
     public class ToolSetupSearchRequest
     {
         public string SearchTerm { get; set; }
@@ -229,18 +235,23 @@ namespace MWWebAPI.Models
         public int PageSize { get; set; } = 25;
         public string SortColumn { get; set; }
         public string SortDirection { get; set; }
+        public string[] SelectedToolIDs { get; set; }
     }
 
     public class ToolInventorySearchResult
     {
+        public int ID { get; set; }
         public string Name { get; set; }
         public string ItemNumber { get; set; }
-        public string CategoryName { get; set; }        
+        public string CategoryName { get; set; }
+        public string Direction { get; set; }
+        public int QtyOnHand { get; set; }
+        public int QtyCheckedOut { get; set; }
     }
 
     public class ToolInventorySearchResults
     {
         public List<ToolInventorySearchResult> SearchResults { get; set; }
-        public int RecordCount { get; set; }
+        public int RecordCount { get; set; }        
     }
 }

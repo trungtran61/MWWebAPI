@@ -256,10 +256,23 @@ namespace MWWebAPI.Controllers
             return ToolInventoryRepo.SaveToolInventoryCodeColumns(saveCodeColumnsRequest);
         }
 
+        [Route("CopyToolInventoryCodeColumns")]
+        [HttpPost]
+        public DBResponse CopyToolInventoryCodeColumns(CopyCodeColumnsRequest copyCodeColumnsRequest)
+        {
+            return ToolInventoryRepo.CopyToolInventoryCodeColumns(copyCodeColumnsRequest);
+        }
+
         [Route("GetSelectedToolInventoryColumns/{code}")]
         public List<ToolInventoryColumn> GetSelectedToolInventoryColumns(string code)
         {
             return ToolInventoryRepo.GetSelectedToolInventoryColumns(code);
+        }
+
+        [Route("GetSearchableToolInventoryColumns/{code}")]
+        public List<ToolInventoryColumn> GetSearchableToolInventoryColumns(string code)
+        {
+            return ToolInventoryRepo.GetSelectedToolInventoryColumns(code, true);
         }
 
         [Route("ToolInventorySearch")]
@@ -268,5 +281,13 @@ namespace MWWebAPI.Controllers
         {
             return ToolInventoryRepo.ToolInventorySearch(toolInventorySearch);
         }
+
+        [Route("ToolInventorySearchSelected")]
+        [HttpPost]
+        public ToolInventorySearchResults ToolInventorySearchSelected(ToolInventorySearch toolInventorySearch)
+        {
+            return ToolInventoryRepo.ToolInventorySearchSelected(toolInventorySearch);
+        }
+        
     } 
 }

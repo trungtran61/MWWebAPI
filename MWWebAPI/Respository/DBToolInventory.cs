@@ -192,8 +192,10 @@ namespace MWWebAPI.DBRepository
                 {
                     cmd.CommandText = "ToolInventorySearch";
                     cmd.CommandType = CommandType.StoredProcedure;
-                    if (toolInventorySearch.Name != string.Empty)
+                    if (toolInventorySearch.Name != null && toolInventorySearch.Name != string.Empty)
                         cmd.Parameters.Add("@Name", SqlDbType.VarChar, 50).Value = toolInventorySearch.Name;
+                    if (toolInventorySearch.ItemNumber != null && toolInventorySearch.ItemNumber != string.Empty)
+                        cmd.Parameters.Add("@ItemNumber", SqlDbType.VarChar, 50).Value = toolInventorySearch.ItemNumber;
                     if (toolInventorySearch.CategoryID != string.Empty)
                         cmd.Parameters.Add("@CategoryID", SqlDbType.Int).Value = toolInventorySearch.CategoryID;
                     if (toolInventorySearch.SortColumn != string.Empty)
@@ -202,6 +204,10 @@ namespace MWWebAPI.DBRepository
                         cmd.Parameters.Add("@SortDirection", SqlDbType.VarChar, 50).Value = toolInventorySearch.SortDirection;
                     cmd.Parameters.Add("@PageNumber", SqlDbType.Int).Value = toolInventorySearch.PageNumber;
                     cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = toolInventorySearch.PageSize;
+
+                    if (toolInventorySearch.SelectedToolIDs != null)
+                        if (toolInventorySearch.SelectedToolIDs.Length > 0)
+                            cmd.Parameters.Add("@SelectedToolIDs", SqlDbType.VarChar).Value = string.Join(",", toolInventorySearch.SelectedToolIDs);
 
                     cmd.Connection = conn;
                     conn.Open();
@@ -218,9 +224,62 @@ namespace MWWebAPI.DBRepository
 
                             toolInventorySearchResults.SearchResults.Add(new ToolInventorySearchResult
                             {
+                                ID = Convert.ToInt32(reader["ID"].ToString()),
                                 Name = reader["Name"].ToString(),
                                 ItemNumber = reader["ItemNumber"].ToString(),
-                                CategoryName = reader["CategoryName"].ToString()
+                                CategoryName = reader["CategoryName"].ToString(),
+                                Direction = reader["Direction"].ToString()
+                            }
+                            );
+                        }                       
+                    }
+                }
+            }
+
+            return toolInventorySearchResults;
+        }
+
+        public ToolInventorySearchResults ToolInventorySearchSelected(ToolInventorySearch toolInventorySearch)
+        {
+            ToolInventorySearchResults toolInventorySearchResults = new ToolInventorySearchResults();
+            bool firstRecord = true;
+            toolInventorySearchResults.SearchResults = new List<ToolInventorySearchResult>();
+            using (SqlConnection conn = new SqlConnection(MWConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.CommandText = "ToolInventorySearchSelected";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    if (toolInventorySearch.SortColumn != string.Empty)
+                        cmd.Parameters.Add("@SortColumn", SqlDbType.VarChar, 50).Value = toolInventorySearch.SortColumn;
+                    if (toolInventorySearch.SortDirection != string.Empty)
+                        cmd.Parameters.Add("@SortDirection", SqlDbType.VarChar, 50).Value = toolInventorySearch.SortDirection;
+                    cmd.Parameters.Add("@PageNumber", SqlDbType.Int).Value = toolInventorySearch.PageNumber;
+                    cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = toolInventorySearch.PageSize;
+                    cmd.Parameters.Add("@SelectedToolIDs", SqlDbType.VarChar).Value = string.Join(",", toolInventorySearch.SelectedToolIDs);
+
+                    cmd.Connection = conn;
+                    conn.Open();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            if (firstRecord)
+                            {
+                                firstRecord = false;
+                                toolInventorySearchResults.RecordCount = Convert.ToInt16(reader["RecordCount"].ToString());
+                            }
+
+                            toolInventorySearchResults.SearchResults.Add(new ToolInventorySearchResult
+                            {
+                                ID = Convert.ToInt32(reader["ID"].ToString()),
+                                Name = reader["Name"].ToString(),
+                                ItemNumber = reader["ItemNumber"].ToString(),
+                                CategoryName = reader["CategoryName"].ToString(),
+                                Direction = reader["Direction"].ToString(),
+                                QtyOnHand = Convert.ToInt32(reader["Qty"].ToString()),
+                                QtyCheckedOut = Convert.ToInt32(reader["Qty"].ToString())
                             }
                             );
                         }
@@ -231,7 +290,7 @@ namespace MWWebAPI.DBRepository
             return toolInventorySearchResults;
         }
         //
-        public List<ToolInventoryColumn> GetSelectedToolInventoryColumns(string code)
+        public List<ToolInventoryColumn> GetSelectedToolInventoryColumns(string code, bool searchableOnly=false)
         {
             List<ToolInventoryColumn> toolInventoryColumns = new List<ToolInventoryColumn>();
             using (SqlConnection conn = new SqlConnection(MWConnectionString))
@@ -241,6 +300,7 @@ namespace MWWebAPI.DBRepository
                     cmd.CommandText = "spGetSelectedToolInventoryColumns";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Add("@code", SqlDbType.VarChar, 50).Value = code;
+                    cmd.Parameters.Add("@searchableOnly", SqlDbType.Bit).Value = searchableOnly;
                     cmd.Connection = conn;
                     conn.Open();
 
@@ -1041,6 +1101,45 @@ namespace MWWebAPI.DBRepository
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Add("@Code", SqlDbType.VarChar, 50).Value = saveCodeColumnsRequest.Code;
                         cmd.Parameters.Add("@Columns", SqlDbType.VarChar).Value = saveCodeColumnsRequest.Columns;
+                        con.Open();
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        dbResponse.RecordsAffected = rowsAffected;
+
+                        if (rowsAffected > 0)
+                        {
+                            dbResponse.ReturnCode = 0;
+                        }
+                        else
+                        {
+                            dbResponse.ReturnCode = -1;
+                            dbResponse.Message = "No update";
+                        }
+                    }
+                    con.Close();
+                }
+            }
+            catch
+            {
+                dbResponse.ReturnCode = -1;
+                throw;
+            }
+
+            return dbResponse;
+        }
+
+        public DBResponse CopyToolInventoryCodeColumns(CopyCodeColumnsRequest copyCodeColumnsRequest)
+        {
+            DBResponse dbResponse = new DBResponse();
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(MWConnectionString))
+                {
+                    using (SqlCommand cmd = new SqlCommand("spCopyToolInventoryCodeColumns", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Add("@Code", SqlDbType.VarChar, 50).Value = copyCodeColumnsRequest.Code;
+                        cmd.Parameters.Add("@CopyToCode", SqlDbType.VarChar, 50).Value = copyCodeColumnsRequest.CopyToCode;                        
                         con.Open();
                         int rowsAffected = cmd.ExecuteNonQuery();
                         dbResponse.RecordsAffected = rowsAffected;
