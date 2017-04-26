@@ -204,6 +204,17 @@ namespace MWWebAPI.Models
         public string SearchTerm { get; set; }
     }
 
+    public class CheckOutCheckInItem
+    {
+        public int ID { get; set; }
+        public int Qty { get; set; }
+    }
+    public class CheckOutCheckInRequest
+    {
+        public string Action { get; set; }
+        public string ModifiedBy { get; set; }
+        public List<CheckOutCheckInItem> CheckOutCheckInItems { get; set; }
+    }  
     public class ToolInventoryColumn
     {
         public string Name { get; set; }
@@ -231,6 +242,20 @@ namespace MWWebAPI.Models
         public string Name { get; set; }
         public string ItemNumber { get; set; }
         public string CategoryID { get; set; }
+        public string MWID { get; set; }
+        public string Radius { get; set; }
+        public string NumberOfCutters { get; set; }
+        public string ChipBreaker { get; set; }
+        public string Material { get; set; }
+        public string Grade { get; set; }
+        public string Location { get; set; }
+        public string ExternalLocation { get; set; }
+        public string Manufacturer { get; set; }
+        public string Comment { get; set; }
+        public string StatusID { get; set; }
+        public string ToolGroupNumber { get; set; }
+        public string Description { get; set; }
+        public string CuttingMethods { get; set; }
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 25;
         public string SortColumn { get; set; }
@@ -244,14 +269,31 @@ namespace MWWebAPI.Models
         public string Name { get; set; }
         public string ItemNumber { get; set; }
         public string CategoryName { get; set; }
-        public string Direction { get; set; }
+        public string ChipBreaker { get; set; }
+        public string Material { get; set; }
+        public string Grade { get; set; }
+        public string Location { get; set; }
+        public string ExternalLocation { get; set; }
+        public double OrderPoint { get; set; }
+        public double InventoryLevel { get; set; }
+        public double UnitPrice { get; set; }        
+        public string Manufacturer { get; set; }
+        public string Comment { get; set; }
+        public string Status { get; set; }
+        public double PackSize { get; set; }
+        public string Unit { get; set; }
+        public bool? Locked { get; set; }
+        public int ToolGroupNumber { get; set; }
+        public string Description { get; set; }
+        public string CuttingMethods { get; set; }
         public int QtyOnHand { get; set; }
         public int QtyCheckedOut { get; set; }
     }
-
+    
     public class ToolInventorySearchResults
     {
         public List<ToolInventorySearchResult> SearchResults { get; set; }
         public int RecordCount { get; set; }        
     }
+    
 }

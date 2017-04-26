@@ -288,6 +288,17 @@ namespace MWWebAPI.Controllers
         {
             return ToolInventoryRepo.ToolInventorySearchSelected(toolInventorySearch);
         }
-        
+       
+        [Route("CheckOutCheckIn")]
+        [HttpPost]
+        public APIResponse CheckOutCheckIn(CheckOutCheckInRequest checkOutCheckInRequest)
+        {
+            DBResponse dbResponse = ToolInventoryRepo.CheckOutCheckIn(checkOutCheckInRequest);
+            return new APIResponse
+            {
+                ResponseCode = 0,
+                ResponseText = checkOutCheckInRequest.Action + " successful."
+            };
+        }
     } 
 }

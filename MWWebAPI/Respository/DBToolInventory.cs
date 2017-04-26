@@ -181,6 +181,52 @@ namespace MWWebAPI.DBRepository
             return toolInventoryColumns;
         }
 
+        public DBResponse CheckOutCheckIn(CheckOutCheckInRequest checkOutCheckInRequest)
+        {
+            DBResponse dbResponse = new DBResponse();
+            StringBuilder sbItemQty = new StringBuilder();
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(MWConnectionString))
+                {
+                    using (SqlCommand cmd = new SqlCommand("CheckOutCheckIn", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Add("@Action", SqlDbType.VarChar, 10).Value = checkOutCheckInRequest.Action;
+                        cmd.Parameters.Add("@ModifiedBy", SqlDbType.VarChar, 30).Value = checkOutCheckInRequest.ModifiedBy;
+
+                        foreach (CheckOutCheckInItem item in checkOutCheckInRequest.CheckOutCheckInItems)
+                        {
+                            sbItemQty.AppendFormat("{0}:{1},", item.ID, item.Qty);
+                        }
+
+                        cmd.Parameters.Add("@Items_Qtys", SqlDbType.VarChar).Value = sbItemQty.Remove(sbItemQty.Length - 1,1).ToString();
+                        con.Open();
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        dbResponse.RecordsAffected = rowsAffected;
+
+                        if (rowsAffected > 0)
+                        {
+                            dbResponse.ReturnCode = 0;
+                        }
+                        else
+                        {
+                            dbResponse.ReturnCode = -1;
+                            dbResponse.Message = "No update";
+                        }
+                    }
+                    con.Close();
+                }
+            }
+            catch
+            {
+                dbResponse.ReturnCode = -1;
+                throw;
+            }
+
+            return dbResponse;
+        }
         public ToolInventorySearchResults ToolInventorySearch(ToolInventorySearch toolInventorySearch)
         {
             ToolInventorySearchResults toolInventorySearchResults = new ToolInventorySearchResults();
@@ -192,12 +238,39 @@ namespace MWWebAPI.DBRepository
                 {
                     cmd.CommandText = "ToolInventorySearch";
                     cmd.CommandType = CommandType.StoredProcedure;
-                    if (toolInventorySearch.Name != null && toolInventorySearch.Name != string.Empty)
+                    if (string.IsNullOrEmpty(toolInventorySearch.Name))
                         cmd.Parameters.Add("@Name", SqlDbType.VarChar, 50).Value = toolInventorySearch.Name;
-                    if (toolInventorySearch.ItemNumber != null && toolInventorySearch.ItemNumber != string.Empty)
+                    if (string.IsNullOrEmpty(toolInventorySearch.ItemNumber))
                         cmd.Parameters.Add("@ItemNumber", SqlDbType.VarChar, 50).Value = toolInventorySearch.ItemNumber;
-                    if (toolInventorySearch.CategoryID != string.Empty)
+                    if (string.IsNullOrEmpty(toolInventorySearch.CategoryID))
                         cmd.Parameters.Add("@CategoryID", SqlDbType.Int).Value = toolInventorySearch.CategoryID;
+                    if (string.IsNullOrEmpty(toolInventorySearch.MWID))
+                        cmd.Parameters.Add("@MWID", SqlDbType.Int).Value = toolInventorySearch.MWID;
+                    if (string.IsNullOrEmpty(toolInventorySearch.Radius))
+                        cmd.Parameters.Add("@Radius", SqlDbType.VarChar, 50).Value = toolInventorySearch.Radius;
+                    if (string.IsNullOrEmpty(toolInventorySearch.ChipBreaker))
+                        cmd.Parameters.Add("@ChipBreaker", SqlDbType.VarChar, 50).Value = toolInventorySearch.ChipBreaker;
+                    if (string.IsNullOrEmpty(toolInventorySearch.Material))
+                        cmd.Parameters.Add("@Material", SqlDbType.VarChar, 50).Value = toolInventorySearch.Material;
+                    if (string.IsNullOrEmpty(toolInventorySearch.Grade))
+                        cmd.Parameters.Add("@Grade", SqlDbType.VarChar, 50).Value = toolInventorySearch.Grade;
+                    if (string.IsNullOrEmpty(toolInventorySearch.Location))
+                        cmd.Parameters.Add("@Location", SqlDbType.VarChar, 50).Value = toolInventorySearch.Location;
+                    if (string.IsNullOrEmpty(toolInventorySearch.ExternalLocation))
+                        cmd.Parameters.Add("@ExtLocation", SqlDbType.VarChar, 50).Value = toolInventorySearch.ExternalLocation;
+                    if (string.IsNullOrEmpty(toolInventorySearch.Manufacturer))
+                        cmd.Parameters.Add("@Manufacturer", SqlDbType.VarChar, 50).Value = toolInventorySearch.Manufacturer;
+                    if (string.IsNullOrEmpty(toolInventorySearch.Comment))
+                        cmd.Parameters.Add("@Comment", SqlDbType.VarChar, 50).Value = toolInventorySearch.Comment;
+                    if (string.IsNullOrEmpty(toolInventorySearch.StatusID))
+                        cmd.Parameters.Add("@StatusID", SqlDbType.VarChar, 50).Value = toolInventorySearch.StatusID;
+                    if (string.IsNullOrEmpty(toolInventorySearch.ToolGroupNumber))
+                        cmd.Parameters.Add("@ToolGroupNum", SqlDbType.VarChar, 50).Value = toolInventorySearch.ToolGroupNumber;
+                    if (string.IsNullOrEmpty(toolInventorySearch.Description))
+                        cmd.Parameters.Add("@Description", SqlDbType.VarChar, 50).Value = toolInventorySearch.Description;
+                    if (string.IsNullOrEmpty(toolInventorySearch.CuttingMethods))
+                        cmd.Parameters.Add("@CuttingMethods", SqlDbType.VarChar).Value = toolInventorySearch.CuttingMethods;
+
                     if (toolInventorySearch.SortColumn != string.Empty)
                         cmd.Parameters.Add("@SortColumn", SqlDbType.VarChar, 50).Value = toolInventorySearch.SortColumn;
                     if (toolInventorySearch.SortDirection != string.Empty)
@@ -227,8 +300,7 @@ namespace MWWebAPI.DBRepository
                                 ID = Convert.ToInt32(reader["ID"].ToString()),
                                 Name = reader["Name"].ToString(),
                                 ItemNumber = reader["ItemNumber"].ToString(),
-                                CategoryName = reader["CategoryName"].ToString(),
-                                Direction = reader["Direction"].ToString()
+                                CategoryName = reader["CategoryName"].ToString()                                
                             }
                             );
                         }                       
@@ -277,9 +349,8 @@ namespace MWWebAPI.DBRepository
                                 Name = reader["Name"].ToString(),
                                 ItemNumber = reader["ItemNumber"].ToString(),
                                 CategoryName = reader["CategoryName"].ToString(),
-                                Direction = reader["Direction"].ToString(),
-                                QtyOnHand = Convert.ToInt32(reader["Qty"].ToString()),
-                                QtyCheckedOut = Convert.ToInt32(reader["Qty"].ToString())
+                                QtyOnHand = Convert.ToInt32(reader["QtyOnHand"].ToString()),
+                                QtyCheckedOut = Convert.ToInt32(reader["QtyCheckedOut"].ToString())
                             }
                             );
                         }
