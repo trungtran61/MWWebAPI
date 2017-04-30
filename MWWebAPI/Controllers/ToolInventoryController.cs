@@ -37,6 +37,12 @@ namespace MWWebAPI.Controllers
             return ToolInventoryRepo.GetLookupByCategory(lookUpRequest.Category, lookUpRequest.SearchTerm);
         }
 
+        [Route("GetToolCategoryNames")]       
+        public List<Lookup> GetToolCategoryNames()
+        {
+            return ToolInventoryRepo.GetToolCategoryNames();
+        }
+
         [Route("GetCuttingMethodsWithTemplate")]
         [HttpPost]
         public IEnumerable<CuttingMethodTemplate> GetCuttingMethodsWithTemplate(ToolSetupSearchRequest toolSetupSearchRequest)
@@ -263,14 +269,20 @@ namespace MWWebAPI.Controllers
             return ToolInventoryRepo.CopyToolInventoryCodeColumns(copyCodeColumnsRequest);
         }
 
-        [Route("GetSelectedToolInventoryColumns/{code}")]
-        public List<ToolInventoryColumn> GetSelectedToolInventoryColumns(string code)
+        [Route("GetSelectedToolInventoryColumns/{code?}")]
+        public List<ToolInventoryColumn> GetSelectedToolInventoryColumns(string code = "")
         {
             return ToolInventoryRepo.GetSelectedToolInventoryColumns(code);
         }
 
-        [Route("GetSearchableToolInventoryColumns/{code}")]
-        public List<ToolInventoryColumn> GetSearchableToolInventoryColumns(string code)
+        [Route("GetToolNames")]
+        public List<string> GetToolNames()
+        {
+            return ToolInventoryRepo.GetToolNames();
+        }
+
+        [Route("GetSearchableToolInventoryColumns/{code?}")]
+        public List<ToolInventoryColumn> GetSearchableToolInventoryColumns(string code = "")
         {
             return ToolInventoryRepo.GetSelectedToolInventoryColumns(code, true);
         }
@@ -287,8 +299,8 @@ namespace MWWebAPI.Controllers
         public ToolInventorySearchResults ToolInventorySearchSelected(ToolInventorySearch toolInventorySearch)
         {
             return ToolInventoryRepo.ToolInventorySearchSelected(toolInventorySearch);
-        }
-       
+        }       
+
         [Route("CheckOutCheckIn")]
         [HttpPost]
         public APIResponse CheckOutCheckIn(CheckOutCheckInRequest checkOutCheckInRequest)

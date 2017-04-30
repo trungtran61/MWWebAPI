@@ -266,28 +266,32 @@ namespace MWWebAPI.Models
     public class ToolInventorySearchResult
     {
         public int ID { get; set; }
+        public string Unit { get; set; }
+        public string Code { get; set; }
         public string Name { get; set; }
         public string ItemNumber { get; set; }
-        public string CategoryName { get; set; }
-        public string ChipBreaker { get; set; }
+        public string Manufacturer { get; set; }
+        public string MWID { get; set; }
+        public string Location { get; set; }
+        public string Radius { get; set; }
+        public string CuttingMethods { get; set; }
+        public string NumOfCutters { get; set; }
         public string Material { get; set; }
         public string Grade { get; set; }
-        public string Location { get; set; }
-        public string ExternalLocation { get; set; }
-        public double OrderPoint { get; set; }
-        public double InventoryLevel { get; set; }
-        public double UnitPrice { get; set; }        
-        public string Manufacturer { get; set; }
+        public string OnHand { get; set; }
+        public string ChipBreaker { get; set; }
+        public string CheckedOut { get; set; }
         public string Comment { get; set; }
-        public string Status { get; set; }
-        public double PackSize { get; set; }
-        public string Unit { get; set; }
-        public bool? Locked { get; set; }
-        public int ToolGroupNumber { get; set; }
         public string Description { get; set; }
-        public string CuttingMethods { get; set; }
-        public int QtyOnHand { get; set; }
-        public int QtyCheckedOut { get; set; }
+        public string ExternalLocation { get; set; }
+        public string CategoryName { get; set; }
+        public string Status { get; set; }
+        public string isLocked { get; set; }
+        public string OrderPoint { get; set; }
+        public string InventoryLevel { get; set; }
+        public string ToolGroupNumber { get; set; }
+        public string UnitPrice { get; set; }
+        public string PackSize { get; set; }
     }
     
     public class ToolInventorySearchResults

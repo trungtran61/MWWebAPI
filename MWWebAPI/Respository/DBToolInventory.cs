@@ -147,6 +147,37 @@ namespace MWWebAPI.DBRepository
             return lookups;
         }
 
+        //GetToolCategoryNames
+        public List<Lookup> GetToolCategoryNames()
+        {
+            List<Lookup> lookups = new List<Lookup>();
+
+            using (SqlConnection conn = new SqlConnection(MWConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.CommandText = "GetToolCategoryNames";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Connection = conn;
+                    conn.Open();
+
+                    using (SqlDataReader rdLookup = cmd.ExecuteReader())
+                    {
+                        while (rdLookup.Read())
+                        {
+                            Lookup lookup = new Lookup
+                            {
+                                Text = rdLookup["Name"].ToString(),
+                                Value = rdLookup["ID"].ToString()
+                            };
+                            lookups.Add(lookup);
+                        }
+                    }
+                }
+            }
+            return lookups;
+        }
+
         public List<ToolInventoryColumn> GetToolInventoryColumns()
         {
             List<ToolInventoryColumn> toolInventoryColumns = new List<ToolInventoryColumn>();
@@ -238,37 +269,37 @@ namespace MWWebAPI.DBRepository
                 {
                     cmd.CommandText = "ToolInventorySearch";
                     cmd.CommandType = CommandType.StoredProcedure;
-                    if (string.IsNullOrEmpty(toolInventorySearch.Name))
+                    if (!string.IsNullOrEmpty(toolInventorySearch.Name))
                         cmd.Parameters.Add("@Name", SqlDbType.VarChar, 50).Value = toolInventorySearch.Name;
-                    if (string.IsNullOrEmpty(toolInventorySearch.ItemNumber))
+                    if (!string.IsNullOrEmpty(toolInventorySearch.ItemNumber))
                         cmd.Parameters.Add("@ItemNumber", SqlDbType.VarChar, 50).Value = toolInventorySearch.ItemNumber;
-                    if (string.IsNullOrEmpty(toolInventorySearch.CategoryID))
+                    if (!string.IsNullOrEmpty(toolInventorySearch.CategoryID))
                         cmd.Parameters.Add("@CategoryID", SqlDbType.Int).Value = toolInventorySearch.CategoryID;
-                    if (string.IsNullOrEmpty(toolInventorySearch.MWID))
+                    if (!string.IsNullOrEmpty(toolInventorySearch.MWID))
                         cmd.Parameters.Add("@MWID", SqlDbType.Int).Value = toolInventorySearch.MWID;
-                    if (string.IsNullOrEmpty(toolInventorySearch.Radius))
+                    if (!string.IsNullOrEmpty(toolInventorySearch.Radius))
                         cmd.Parameters.Add("@Radius", SqlDbType.VarChar, 50).Value = toolInventorySearch.Radius;
-                    if (string.IsNullOrEmpty(toolInventorySearch.ChipBreaker))
+                    if (!string.IsNullOrEmpty(toolInventorySearch.ChipBreaker))
                         cmd.Parameters.Add("@ChipBreaker", SqlDbType.VarChar, 50).Value = toolInventorySearch.ChipBreaker;
-                    if (string.IsNullOrEmpty(toolInventorySearch.Material))
+                    if (!string.IsNullOrEmpty(toolInventorySearch.Material))
                         cmd.Parameters.Add("@Material", SqlDbType.VarChar, 50).Value = toolInventorySearch.Material;
-                    if (string.IsNullOrEmpty(toolInventorySearch.Grade))
+                    if (!string.IsNullOrEmpty(toolInventorySearch.Grade))
                         cmd.Parameters.Add("@Grade", SqlDbType.VarChar, 50).Value = toolInventorySearch.Grade;
-                    if (string.IsNullOrEmpty(toolInventorySearch.Location))
+                    if (!string.IsNullOrEmpty(toolInventorySearch.Location))
                         cmd.Parameters.Add("@Location", SqlDbType.VarChar, 50).Value = toolInventorySearch.Location;
-                    if (string.IsNullOrEmpty(toolInventorySearch.ExternalLocation))
+                    if (!string.IsNullOrEmpty(toolInventorySearch.ExternalLocation))
                         cmd.Parameters.Add("@ExtLocation", SqlDbType.VarChar, 50).Value = toolInventorySearch.ExternalLocation;
-                    if (string.IsNullOrEmpty(toolInventorySearch.Manufacturer))
+                    if (!string.IsNullOrEmpty(toolInventorySearch.Manufacturer))
                         cmd.Parameters.Add("@Manufacturer", SqlDbType.VarChar, 50).Value = toolInventorySearch.Manufacturer;
-                    if (string.IsNullOrEmpty(toolInventorySearch.Comment))
+                    if (!string.IsNullOrEmpty(toolInventorySearch.Comment))
                         cmd.Parameters.Add("@Comment", SqlDbType.VarChar, 50).Value = toolInventorySearch.Comment;
-                    if (string.IsNullOrEmpty(toolInventorySearch.StatusID))
-                        cmd.Parameters.Add("@StatusID", SqlDbType.VarChar, 50).Value = toolInventorySearch.StatusID;
-                    if (string.IsNullOrEmpty(toolInventorySearch.ToolGroupNumber))
-                        cmd.Parameters.Add("@ToolGroupNum", SqlDbType.VarChar, 50).Value = toolInventorySearch.ToolGroupNumber;
-                    if (string.IsNullOrEmpty(toolInventorySearch.Description))
+                    if (!string.IsNullOrEmpty(toolInventorySearch.StatusID))
+                        cmd.Parameters.Add("@StatusID", SqlDbType.Int).Value = toolInventorySearch.StatusID;
+                    if (!string.IsNullOrEmpty(toolInventorySearch.ToolGroupNumber))
+                        cmd.Parameters.Add("@ToolGroupNum", SqlDbType.Int).Value = toolInventorySearch.ToolGroupNumber;
+                    if (!string.IsNullOrEmpty(toolInventorySearch.Description))
                         cmd.Parameters.Add("@Description", SqlDbType.VarChar, 50).Value = toolInventorySearch.Description;
-                    if (string.IsNullOrEmpty(toolInventorySearch.CuttingMethods))
+                    if (!string.IsNullOrEmpty(toolInventorySearch.CuttingMethods))
                         cmd.Parameters.Add("@CuttingMethods", SqlDbType.VarChar).Value = toolInventorySearch.CuttingMethods;
 
                     if (toolInventorySearch.SortColumn != string.Empty)
@@ -298,9 +329,32 @@ namespace MWWebAPI.DBRepository
                             toolInventorySearchResults.SearchResults.Add(new ToolInventorySearchResult
                             {
                                 ID = Convert.ToInt32(reader["ID"].ToString()),
+                                Unit = reader["Unit"].ToString(),
+                                Code = reader["Code"].ToString(),
                                 Name = reader["Name"].ToString(),
                                 ItemNumber = reader["ItemNumber"].ToString(),
-                                CategoryName = reader["CategoryName"].ToString()                                
+                                Manufacturer = reader["Manufacturer"].ToString(),
+                                MWID = reader["MWID"].ToString(),
+                                Location = reader["Location"].ToString(),
+                                Radius = reader["Radius"].ToString(),
+                                CuttingMethods = reader["CuttingMethods"].ToString(),
+                                NumOfCutters = reader["NumOfCutters"].ToString(),
+                                Material = reader["Material"].ToString(),
+                                Grade = reader["Grade"].ToString(),
+                                OnHand = reader["OnHand"].ToString(),
+                                ChipBreaker = reader["ChipBreaker"].ToString(),
+                                CheckedOut = reader["CheckedOut"].ToString(),
+                                Comment = reader["Comment"].ToString(),
+                                Description = reader["Description"].ToString(),
+                                ExternalLocation = reader["ExternalLocation"].ToString(),
+                                CategoryName = reader["CategoryName"].ToString(),
+                                Status = reader["Status"].ToString(),
+                                isLocked = reader["isLocked"].ToString(),
+                                OrderPoint = reader["OrderPoint"].ToString(),
+                                InventoryLevel = reader["InventoryLevel"].ToString(),
+                                ToolGroupNumber = reader["ToolGroupNumber"].ToString(),
+                                UnitPrice = reader["UnitPrice"].ToString(),
+                                PackSize = reader["PackSize"].ToString()
                             }
                             );
                         }                       
@@ -346,11 +400,32 @@ namespace MWWebAPI.DBRepository
                             toolInventorySearchResults.SearchResults.Add(new ToolInventorySearchResult
                             {
                                 ID = Convert.ToInt32(reader["ID"].ToString()),
+                                Unit = reader["Unit"].ToString(),
+                                Code = reader["Code"].ToString(),
                                 Name = reader["Name"].ToString(),
                                 ItemNumber = reader["ItemNumber"].ToString(),
+                                Manufacturer = reader["Manufacturer"].ToString(),
+                                MWID = reader["MWID"].ToString(),
+                                Location = reader["Location"].ToString(),
+                                Radius = reader["Radius"].ToString(),
+                                CuttingMethods = reader["CuttingMethods"].ToString(),
+                                NumOfCutters = reader["NumOfCutters"].ToString(),
+                                Material = reader["Material"].ToString(),
+                                Grade = reader["Grade"].ToString(),
+                                OnHand = reader["OnHand"].ToString(),
+                                ChipBreaker = reader["ChipBreaker"].ToString(),
+                                CheckedOut = reader["CheckedOut"].ToString(),
+                                Comment = reader["Comment"].ToString(),
+                                Description = reader["Description"].ToString(),
+                                ExternalLocation = reader["ExternalLocation"].ToString(),
                                 CategoryName = reader["CategoryName"].ToString(),
-                                QtyOnHand = Convert.ToInt32(reader["QtyOnHand"].ToString()),
-                                QtyCheckedOut = Convert.ToInt32(reader["QtyCheckedOut"].ToString())
+                                Status = reader["Status"].ToString(),
+                                isLocked = reader["isLocked"].ToString(),
+                                OrderPoint = reader["OrderPoint"].ToString(),
+                                InventoryLevel = reader["InventoryLevel"].ToString(),
+                                ToolGroupNumber = reader["ToolGroupNumber"].ToString(),
+                                UnitPrice = reader["UnitPrice"].ToString(),
+                                PackSize = reader["PackSize"].ToString()
                             }
                             );
                         }
@@ -370,7 +445,9 @@ namespace MWWebAPI.DBRepository
                 {
                     cmd.CommandText = "spGetSelectedToolInventoryColumns";
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@code", SqlDbType.VarChar, 50).Value = code;
+                    if (!string.IsNullOrEmpty(code))
+                        cmd.Parameters.Add("@code", SqlDbType.VarChar, 50).Value = code;
+
                     cmd.Parameters.Add("@searchableOnly", SqlDbType.Bit).Value = searchableOnly;
                     cmd.Connection = conn;
                     conn.Open();
@@ -1296,6 +1373,30 @@ namespace MWWebAPI.DBRepository
                 line = line.Replace(rule.FromSnippet, rule.ToSnippet);
             }
             return line;
+        }
+
+        public List<string> GetToolNames()
+        {
+            List<string> toolNames = new List<string>();
+            using (SqlConnection conn = new SqlConnection(MWConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.CommandText = "GetToolNames";
+                    cmd.CommandType = CommandType.StoredProcedure;                  
+                    cmd.Connection = conn;
+                    conn.Open();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            toolNames.Add(reader["ToolName"].ToString());
+                        }
+                    }
+                }
+            }
+            return toolNames;
         }
         public void RefreshLookupCaches()
         {
