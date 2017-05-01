@@ -269,22 +269,23 @@ namespace MWWebAPI.Controllers
             return ToolInventoryRepo.CopyToolInventoryCodeColumns(copyCodeColumnsRequest);
         }
 
-        [Route("GetSelectedToolInventoryColumns/{code?}")]
-        public List<ToolInventoryColumn> GetSelectedToolInventoryColumns(string code = "")
+        [Route("GetSelectedToolInventoryColumns/{codes?}")]
+        public List<ToolInventoryColumn> GetSelectedToolInventoryColumns(string codes = "")
         {
-            return ToolInventoryRepo.GetSelectedToolInventoryColumns(code);
+            return ToolInventoryRepo.GetSelectedToolInventoryColumns(codes);
         }
 
         [Route("GetToolNames")]
-        public List<string> GetToolNames()
+        [HttpPost]
+        public List<string> GetToolNames(LookUpRequest lookUpRequest)
         {
-            return ToolInventoryRepo.GetToolNames();
+            return ToolInventoryRepo.GetToolNames(lookUpRequest.SearchTerm);
         }
 
-        [Route("GetSearchableToolInventoryColumns/{code?}")]
-        public List<ToolInventoryColumn> GetSearchableToolInventoryColumns(string code = "")
+        [Route("GetSearchableToolInventoryColumns/{codes?}")]
+        public List<ToolInventoryColumn> GetSearchableToolInventoryColumns(string codes = "")
         {
-            return ToolInventoryRepo.GetSelectedToolInventoryColumns(code, true);
+            return ToolInventoryRepo.GetSelectedToolInventoryColumns(codes, true);
         }
 
         [Route("ToolInventorySearch")]

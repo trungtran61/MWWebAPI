@@ -185,7 +185,7 @@ namespace MWWebAPI.DBRepository
             {
                 using (SqlCommand cmd = new SqlCommand())
                 {
-                    cmd.CommandText = "spGetToolInventoryColumns";
+                    cmd.CommandText = "GetToolInventoryColumns";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Connection = conn;
                     conn.Open();
@@ -436,19 +436,22 @@ namespace MWWebAPI.DBRepository
             return toolInventorySearchResults;
         }
         //
-        public List<ToolInventoryColumn> GetSelectedToolInventoryColumns(string code, bool searchableOnly=false)
+        public List<ToolInventoryColumn> GetSelectedToolInventoryColumns(string codes, bool searchableOnly=false)
         {
             List<ToolInventoryColumn> toolInventoryColumns = new List<ToolInventoryColumn>();
             using (SqlConnection conn = new SqlConnection(MWConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand())
                 {
-                    cmd.CommandText = "spGetSelectedToolInventoryColumns";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    if (!string.IsNullOrEmpty(code))
-                        cmd.Parameters.Add("@code", SqlDbType.VarChar, 50).Value = code;
+                    if (searchableOnly)
+                        cmd.CommandText = "GetSearchableToolInventoryColumns";
+                    else
+                        cmd.CommandText = "GetSelectedToolInventoryColumns";
 
-                    cmd.Parameters.Add("@searchableOnly", SqlDbType.Bit).Value = searchableOnly;
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    if (!string.IsNullOrEmpty(codes))
+                        cmd.Parameters.Add("@codes", SqlDbType.VarChar).Value = codes;
+
                     cmd.Connection = conn;
                     conn.Open();
 
@@ -477,7 +480,7 @@ namespace MWWebAPI.DBRepository
             {
                 using (SqlCommand cmd = new SqlCommand())
                 {
-                    cmd.CommandText = "spGetToolInventoryColumnsByCode";
+                    cmd.CommandText = "GetToolInventoryColumnsByCode";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Add("@code", SqlDbType.VarChar, 50).Value = code;
                     cmd.Connection = conn;
@@ -1375,7 +1378,7 @@ namespace MWWebAPI.DBRepository
             return line;
         }
 
-        public List<string> GetToolNames()
+        public List<string> GetToolNames(string searchTerm)
         {
             List<string> toolNames = new List<string>();
             using (SqlConnection conn = new SqlConnection(MWConnectionString))
@@ -1385,6 +1388,7 @@ namespace MWWebAPI.DBRepository
                     cmd.CommandText = "GetToolNames";
                     cmd.CommandType = CommandType.StoredProcedure;                  
                     cmd.Connection = conn;
+                    cmd.Parameters.Add("@SearchTerm", SqlDbType.VarChar, 50).Value = searchTerm;
                     conn.Open();
 
                     using (SqlDataReader reader = cmd.ExecuteReader())
