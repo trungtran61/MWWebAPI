@@ -226,6 +226,7 @@ namespace MWWebAPI.Models
         public string RelatedTextField { get; set; }
         public string InputType { get; set; }
         public int UISize { get; set; }
+        public string PropertyName { get; set; }
         public bool Show { get; set; }
 
     }
@@ -292,6 +293,8 @@ namespace MWWebAPI.Models
         public string ToolGroupNumber { get; set; }
         public string UnitPrice { get; set; }
         public string PackSize { get; set; }
+        public string CategoryID { get; set; }
+        public string StatusID { get; set; }
     }
     
     public class ToolInventorySearchResults

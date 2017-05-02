@@ -288,6 +288,12 @@ namespace MWWebAPI.Controllers
             return ToolInventoryRepo.GetSelectedToolInventoryColumns(codes, true);
         }
 
+        [Route("GetToolDetails/{ToolID}")]
+        public ToolInventorySearchResult GetToolDetails(int ToolID)
+        {
+            return ToolInventoryRepo.GetToolDetails(ToolID);
+        }
+
         [Route("ToolInventorySearch")]
         [HttpPost]
         public ToolInventorySearchResults ToolInventorySearch(ToolInventorySearch toolInventorySearch)

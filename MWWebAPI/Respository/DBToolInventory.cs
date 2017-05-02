@@ -258,6 +258,58 @@ namespace MWWebAPI.DBRepository
 
             return dbResponse;
         }
+
+        public ToolInventorySearchResult GetToolDetails(int ToolID)
+        {
+            ToolInventorySearchResult toolInventorySearchResult = new ToolInventorySearchResult();
+            using (SqlConnection conn = new SqlConnection(MWConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.CommandText = "GetToolDetails";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@ToolID", SqlDbType.Int).Value = ToolID;
+                    cmd.Connection = conn;
+                    conn.Open();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+
+                            toolInventorySearchResult.ID = Convert.ToInt32(reader["ID"].ToString());
+                            toolInventorySearchResult.Unit = reader["Unit"].ToString();
+                            toolInventorySearchResult.Code = reader["Code"].ToString();
+                            toolInventorySearchResult.Name = reader["Name"].ToString();
+                            toolInventorySearchResult.ItemNumber = reader["ItemNumber"].ToString();
+                            toolInventorySearchResult.Manufacturer = reader["Manufacturer"].ToString();
+                            toolInventorySearchResult.Location = reader["Location"].ToString();
+                            toolInventorySearchResult.CuttingMethods = reader["CuttingMethods"].ToString();
+                            toolInventorySearchResult.Material = reader["Material"].ToString();
+                            toolInventorySearchResult.Grade = reader["Grade"].ToString();
+                            toolInventorySearchResult.OnHand = reader["OnHand"].ToString();
+                            toolInventorySearchResult.ChipBreaker = reader["ChipBreaker"].ToString();
+                            toolInventorySearchResult.CheckedOut = reader["CheckedOut"].ToString();
+                            toolInventorySearchResult.Comment = reader["Comment"].ToString();
+                            toolInventorySearchResult.Description = reader["Description"].ToString();
+                            toolInventorySearchResult.ExternalLocation = reader["ExternalLocation"].ToString();
+                            toolInventorySearchResult.CategoryID = reader["CategoryId"].ToString();
+                            toolInventorySearchResult.StatusID = reader["StatusId"].ToString();
+                            toolInventorySearchResult.CategoryName = reader["CategoryName"].ToString();
+                            toolInventorySearchResult.Status = reader["Status"].ToString();
+                            toolInventorySearchResult.isLocked = reader["isLocked"].ToString();
+                            toolInventorySearchResult.OrderPoint = reader["OrderPoint"].ToString();
+                            toolInventorySearchResult.InventoryLevel = reader["InventoryLevel"].ToString();
+                            toolInventorySearchResult.ToolGroupNumber = reader["ToolGroupNumber"].ToString();
+                            toolInventorySearchResult.UnitPrice = reader["UnitPrice"].ToString();
+                            toolInventorySearchResult.PackSize = reader["PackSize"].ToString();
+                        }
+                    }
+                }
+            }
+
+            return toolInventorySearchResult;
+        }
         public ToolInventorySearchResults ToolInventorySearch(ToolInventorySearch toolInventorySearch)
         {
             ToolInventorySearchResults toolInventorySearchResults = new ToolInventorySearchResults();
@@ -464,7 +516,8 @@ namespace MWWebAPI.DBRepository
                                 Name = reader["ColumnName"].ToString(),
                                 Header = reader["ColumnHeader"].ToString(),
                                 InputType = reader["InputType"].ToString(),
-                                UISize = Convert.ToInt16(reader["UISize"].ToString())
+                                UISize = Convert.ToInt16(reader["UISize"].ToString()),
+                                PropertyName = reader["PropertyName"].ToString()
                             };
                             toolInventoryColumns.Add(toolInventoryColumn);
                         }
