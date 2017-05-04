@@ -228,6 +228,7 @@ namespace MWWebAPI.Models
         public int UISize { get; set; }
         public string PropertyName { get; set; }
         public bool Show { get; set; }
+        public string Required { get; set; }
 
     }
 

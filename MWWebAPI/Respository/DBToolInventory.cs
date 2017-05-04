@@ -259,9 +259,53 @@ namespace MWWebAPI.DBRepository
             return dbResponse;
         }
 
+        public int SaveToolDetails(ToolInventorySearchResult toolInventorySearchResult)
+        {
+            using (SqlConnection conn = new SqlConnection(MWConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.CommandText = "SaveToolDetails";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@ToolID", SqlDbType.Int).Value = toolInventorySearchResult.ID;
+                    cmd.Parameters.Add("@Unit", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.Unit;
+                    cmd.Parameters.Add("@Code", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.Code;
+                    cmd.Parameters.Add("@Name", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.Name;
+                    cmd.Parameters.Add("@ItemNumber", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.ItemNumber;
+                    cmd.Parameters.Add("@Manufacturer", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.Manufacturer;
+                    cmd.Parameters.Add("@Location", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.Location;
+                    cmd.Parameters.Add("@CuttingMethods", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.CuttingMethods;
+                    cmd.Parameters.Add("@Material", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.Material;
+                    cmd.Parameters.Add("@Grade", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.Grade;
+                    cmd.Parameters.Add("@OnHand", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.OnHand;
+                    cmd.Parameters.Add("@ChipBreaker", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.ChipBreaker;
+                    cmd.Parameters.Add("@CheckedOut", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.CheckedOut;
+                    cmd.Parameters.Add("@Comment", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.Comment;
+                    cmd.Parameters.Add("@Description", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.Description;
+                    cmd.Parameters.Add("@ExternalLocation", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.ExternalLocation;
+                    cmd.Parameters.Add("@CategoryName", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.CategoryName;
+                    cmd.Parameters.Add("@Status", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.Status;
+                    cmd.Parameters.Add("@isLocked", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.isLocked;
+                    cmd.Parameters.Add("@OrderPoint", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.OrderPoint;
+                    cmd.Parameters.Add("@InventoryLevel", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.InventoryLevel;
+                    cmd.Parameters.Add("@ToolGroupNumber", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.ToolGroupNumber;
+                    cmd.Parameters.Add("@UnitPrice", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.UnitPrice;
+                    cmd.Parameters.Add("@PackSize", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.PackSize;
+                    cmd.Connection = conn;
+                    conn.Open();
+                    toolInventorySearchResult.ID = Convert.ToInt32(cmd.ExecuteScalar());
+                }
+            }
+            return toolInventorySearchResult.ID;
+        }
         public ToolInventorySearchResult GetToolDetails(int ToolID)
         {
             ToolInventorySearchResult toolInventorySearchResult = new ToolInventorySearchResult();
+
+            // new tool?
+            if (ToolID == 0)
+                return toolInventorySearchResult;
+
             using (SqlConnection conn = new SqlConnection(MWConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand())
@@ -276,7 +320,6 @@ namespace MWWebAPI.DBRepository
                     {
                         while (reader.Read())
                         {
-
                             toolInventorySearchResult.ID = Convert.ToInt32(reader["ID"].ToString());
                             toolInventorySearchResult.Unit = reader["Unit"].ToString();
                             toolInventorySearchResult.Code = reader["Code"].ToString();
@@ -517,8 +560,9 @@ namespace MWWebAPI.DBRepository
                                 Header = reader["ColumnHeader"].ToString(),
                                 InputType = reader["InputType"].ToString(),
                                 UISize = Convert.ToInt16(reader["UISize"].ToString()),
-                                PropertyName = reader["PropertyName"].ToString()
-                            };
+                                PropertyName = reader["PropertyName"].ToString(),
+                                Required = (reader.GetBoolean(reader.GetOrdinal("Required")) ? "required" : "")
+                        };
                             toolInventoryColumns.Add(toolInventoryColumn);
                         }
                     }

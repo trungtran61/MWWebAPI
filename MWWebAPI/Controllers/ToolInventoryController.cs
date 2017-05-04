@@ -294,6 +294,14 @@ namespace MWWebAPI.Controllers
             return ToolInventoryRepo.GetToolDetails(ToolID);
         }
 
+
+        [Route("SaveToolDetails")]
+        [HttpPost]
+        public int SaveToolDetails(ToolInventorySearchResult toolInventorySearchResult)
+        {
+            return ToolInventoryRepo.SaveToolDetails(toolInventorySearchResult);
+        }
+
         [Route("ToolInventorySearch")]
         [HttpPost]
         public ToolInventorySearchResults ToolInventorySearch(ToolInventorySearch toolInventorySearch)
