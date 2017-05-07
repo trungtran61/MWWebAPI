@@ -181,6 +181,13 @@ namespace MWWebAPI.Controllers
             return retPartNumbers.ToArray();
         }
 
+        [Route("GetLookUpCategories/{searchTerm?}")]
+        public string[] GetLookUpCategories(string searchTerm = "")
+        {
+            List<string> getCategories = ToolInventoryRepo.GetLookUpCategories(searchTerm);
+            return getCategories.ToArray();
+        }
+
         [Route("GetSSPPartNumbers/{partId?}")]
         public string[] GetSSPPartNumbers(string partId = "")
         {
@@ -308,6 +315,14 @@ namespace MWWebAPI.Controllers
         {
             return ToolInventoryRepo.ToolInventorySearch(toolInventorySearch);
         }
+        
+        [Route("GetLookUpCategory")]
+        [HttpPost]
+        public LookupCategories GetLookUpCategory(LookupCategorySearch lookupCategorySearch)
+        {
+            return ToolInventoryRepo.GetLookUpCategory(lookupCategorySearch);
+        }
+        //public LookupCategories GetLookUpCategory(LookupCategorySearch lookupCategorySearch)
 
         [Route("ToolInventorySearchSelected")]
         [HttpPost]
@@ -325,6 +340,18 @@ namespace MWWebAPI.Controllers
             {
                 ResponseCode = 0,
                 ResponseText = checkOutCheckInRequest.Action + " successful."
+            };
+        }
+
+        [Route("SaveLookupCategory")]
+        [HttpPost]
+        public APIResponse SaveLookupCategory(SaveLookupCategoryRequest saveLookupCategoryRequest)
+        {
+            DBResponse dbResponse = ToolInventoryRepo.SaveLookupCategory(saveLookupCategoryRequest);
+            return new APIResponse
+            {
+                ResponseCode = 0,
+                ResponseText = "Save LookupCategory successful."
             };
         }
     } 

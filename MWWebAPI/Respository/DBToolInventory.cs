@@ -531,6 +531,51 @@ namespace MWWebAPI.DBRepository
             return toolInventorySearchResults;
         }
         //
+        public LookupCategories GetLookUpCategory(LookupCategorySearch lookupCategorySearch)
+        {
+            LookupCategories lookupCategories = new LookupCategories();
+            bool firstRecord = true;
+            lookupCategories.lookupCategoryValues = new List<LookupCategoryValue>();
+ 
+            using (SqlConnection conn = new SqlConnection(MWConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.CommandText = "GetLookUpCategory";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@PageNumber", SqlDbType.Int).Value = lookupCategorySearch.PageNumber;
+                    cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = lookupCategorySearch.PageSize;
+                    cmd.Parameters.Add("@Category", SqlDbType.VarChar).Value =lookupCategorySearch.Category;
+
+                    cmd.Connection = conn;
+                    conn.Open();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            if (firstRecord)
+                            {
+                                firstRecord = false;
+                                lookupCategories.RecordCount = Convert.ToInt16(reader["RecordCount"].ToString());
+                            }
+
+                            lookupCategories.lookupCategoryValues.Add(new LookupCategoryValue
+                            {
+                                ID = Convert.ToInt32(reader["ID"].ToString()),
+                                Text = reader["Text"].ToString(),
+                                Value = reader["Value"].ToString(),
+                                Active = bool.Parse(reader["isActive"].ToString())
+                            }
+                            );
+                        }
+                    }
+                }
+            }
+
+            return lookupCategories;
+        }
+        //
         public List<ToolInventoryColumn> GetSelectedToolInventoryColumns(string codes, bool searchableOnly=false)
         {
             List<ToolInventoryColumn> toolInventoryColumns = new List<ToolInventoryColumn>();
@@ -966,6 +1011,32 @@ namespace MWWebAPI.DBRepository
             }
 
             return ConversionRules;
+        }
+                
+
+        public List<string> GetLookUpCategories(string searchTerm)
+        {
+            List<string> categories = new List<string>();
+            using (SqlConnection con = new SqlConnection(MWConnectionString))
+            {
+                string query = "GetLookUpCategories";
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    if (!string.IsNullOrEmpty(searchTerm))
+                        cmd.Parameters.Add("@SearchTerm", SqlDbType.Char, 1).Value = searchTerm;
+
+                    con.Open();
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        categories.Add(reader["Category"].ToString());
+                    }
+                }
+                con.Close();
+            }
+            return categories;
         }
 
         public List<string> GetMachines(string machinePrefix)
@@ -1498,6 +1569,53 @@ namespace MWWebAPI.DBRepository
                 }
             }
             return toolNames;
+        }
+
+        public DBResponse SaveLookupCategory(SaveLookupCategoryRequest saveLookupCategoryRequest)
+        {
+            DBResponse dbResponse = new DBResponse();
+            StringBuilder sbValue = new StringBuilder();
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(MWConnectionString))
+                {
+                    using (SqlCommand cmd = new SqlCommand("SaveLookupCategory", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Add("@Category", SqlDbType.VarChar, 50).Value = saveLookupCategoryRequest.Category;
+                        cmd.Parameters.Add("@ModifiedBy", SqlDbType.VarChar, 30).Value = saveLookupCategoryRequest.ModifiedBy;
+
+                        foreach (LookupCategoryValue item in saveLookupCategoryRequest.LookupCategoryValues)
+                        {
+                            sbValue.AppendFormat("{0}:{1}|{2},", item.ID, item.Value, item.Active);
+                        }
+
+                        cmd.Parameters.Add("@Values", SqlDbType.VarChar).Value = sbValue.Remove(sbValue.Length - 1, 1).ToString();
+                        con.Open();
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        dbResponse.RecordsAffected = rowsAffected;
+
+                        if (rowsAffected > 0)
+                        {
+                            dbResponse.ReturnCode = 0;
+                        }
+                        else
+                        {
+                            dbResponse.ReturnCode = -1;
+                            dbResponse.Message = "No update";
+                        }
+                    }
+                    con.Close();
+                }
+            }
+            catch
+            {
+                dbResponse.ReturnCode = -1;
+                throw;
+            }
+
+            return dbResponse;
         }
         public void RefreshLookupCaches()
         {

@@ -214,7 +214,14 @@ namespace MWWebAPI.Models
         public string Action { get; set; }
         public string ModifiedBy { get; set; }
         public List<CheckOutCheckInItem> CheckOutCheckInItems { get; set; }
-    }  
+    }
+    //SaveLookupCategoryRequest
+    public class SaveLookupCategoryRequest
+    {
+        public string Category { get; set; }
+        public string ModifiedBy { get; set; }
+        public List<LookupCategoryValue> LookupCategoryValues { get; set; }
+    }
     public class ToolInventoryColumn
     {
         public string Name { get; set; }
@@ -265,6 +272,13 @@ namespace MWWebAPI.Models
         public string[] SelectedToolIDs { get; set; }
     }
 
+    public class LookupCategorySearch
+    {
+        public string Category { get; set; }
+        public int PageNumber { get; set; } = 1;
+        public int PageSize { get; set; } = 20;        
+    }
+
     public class ToolInventorySearchResult
     {
         public int ID { get; set; }
@@ -303,5 +317,17 @@ namespace MWWebAPI.Models
         public List<ToolInventorySearchResult> SearchResults { get; set; }
         public int RecordCount { get; set; }        
     }
-    
+
+    public class LookupCategories
+    {
+        public List<LookupCategoryValue> lookupCategoryValues { get; set; }
+        public int RecordCount { get; set; }
+    }
+    public class LookupCategoryValue
+    {
+        public int ID { get; set; }
+        public string Text { get; set; }
+        public string Value { get; set; }
+        public bool Active { get; set; }
+    }
 }
