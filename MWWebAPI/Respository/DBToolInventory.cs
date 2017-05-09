@@ -13,8 +13,9 @@ using System.Web.Hosting;
 
 namespace MWWebAPI.DBRepository
 {
-    public class DBToolInventoryRepository : DBRepositoryBase, IDisposable
+       public class DBToolInventoryRepository : DBRepositoryBase, IDisposable
     {
+        private static string imageLibrary = ConfigurationManager.AppSettings["imageLibrary"];
         public string[] GetCuttingMethodTemplate(string cuttingMethod)
         {
             List<string> retTemplate = new List<string>();
@@ -259,6 +260,52 @@ namespace MWWebAPI.DBRepository
             return dbResponse;
         }
 
+        public DBResponse LinkTool(LinkToolRequest linkToolRequest)
+        {
+            DBResponse dbResponse = new DBResponse();
+            StringBuilder sbChildIDs = new StringBuilder();
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(MWConnectionString))
+                {
+                    using (SqlCommand cmd = new SqlCommand("LinkTool", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Add("@Action", SqlDbType.VarChar, 10).Value = linkToolRequest.Action;
+                        cmd.Parameters.Add("@ParentID", SqlDbType.Int).Value = linkToolRequest.ParentID;
+
+                        foreach (int childID in linkToolRequest.ChildIDs)
+                        {
+                            sbChildIDs.AppendFormat("{0},", childID);
+                        }
+
+                        cmd.Parameters.Add("@ChildIDs", SqlDbType.VarChar).Value = sbChildIDs.Remove(sbChildIDs.Length - 1, 1).ToString();
+                        con.Open();
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        dbResponse.RecordsAffected = rowsAffected;
+
+                        if (rowsAffected > 0)
+                        {
+                            dbResponse.ReturnCode = 0;
+                        }
+                        else
+                        {
+                            dbResponse.ReturnCode = -1;
+                            dbResponse.Message = "No update";
+                        }
+                    }
+                    con.Close();
+                }
+            }
+            catch
+            {
+                dbResponse.ReturnCode = -1;
+                throw;
+            }
+
+            return dbResponse;
+        }
         public int SaveToolDetails(ToolInventorySearchResult toolInventorySearchResult)
         {
             using (SqlConnection conn = new SqlConnection(MWConnectionString))
@@ -346,6 +393,24 @@ namespace MWWebAPI.DBRepository
                             toolInventorySearchResult.ToolGroupNumber = reader["ToolGroupNumber"].ToString();
                             toolInventorySearchResult.UnitPrice = reader["UnitPrice"].ToString();
                             toolInventorySearchResult.PackSize = reader["PackSize"].ToString();
+                            toolInventorySearchResult.ImagePath = imageLibrary + reader["ImagePath"].ToString();
+                            if (reader["LinkedTools"].ToString() != string.Empty)
+                            {
+                                var linkedTools = reader["LinkedTools"].ToString().Split(',').ToList();
+                                toolInventorySearchResult.LinkedTools = new List<LinkedTool>();
+                                foreach (string linkTool in linkedTools)
+                                {
+                                    string[] arrlinkTool = linkTool.Split('|');
+                                    toolInventorySearchResult.LinkedTools.Add(
+                                        new LinkedTool
+                                        {
+                                            ID = Convert.ToInt32(arrlinkTool[0]),
+                                            Description = arrlinkTool[1],
+                                            ImagePath = imageLibrary + arrlinkTool[2]
+                                }
+                                    );
+                                }
+                            }                            
                         }
                     }
                 }
@@ -1571,6 +1636,29 @@ namespace MWWebAPI.DBRepository
             return toolNames;
         }
 
+        public void SaveToolImageInfo(int toolID, string fileName)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(MWConnectionString))
+                {
+                    using (SqlCommand cmd = new SqlCommand("SaveToolImageInfo", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Add("@ToolID", SqlDbType.Int).Value = toolID;
+                        cmd.Parameters.Add("@FileName", SqlDbType.VarChar, 50).Value = fileName;
+                        con.Open();
+                        int rowsAffected = cmd.ExecuteNonQuery();                       
+                    }
+                    con.Close();
+                }
+            }
+            catch
+            {
+               throw;
+            }
+
+        }
         public DBResponse SaveLookupCategory(SaveLookupCategoryRequest saveLookupCategoryRequest)
         {
             DBResponse dbResponse = new DBResponse();

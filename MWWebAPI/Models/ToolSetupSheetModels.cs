@@ -310,8 +310,23 @@ namespace MWWebAPI.Models
         public string PackSize { get; set; }
         public string CategoryID { get; set; }
         public string StatusID { get; set; }
+        public string ImagePath { get; set; }
+        public List<LinkedTool> LinkedTools { get; set; }
     }
-    
+
+    public class LinkedTool
+    {        
+        public int ID { get; set; }
+        public string Description { get; set; }
+        public string ImagePath { get; set; }
+    }
+
+    public class LinkToolRequest
+    {
+        public int ParentID { get; set; }
+        public List<int> ChildIDs { get; set; }
+        public string Action { get; set; }        
+    }
     public class ToolInventorySearchResults
     {
         public List<ToolInventorySearchResult> SearchResults { get; set; }

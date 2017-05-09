@@ -7,6 +7,7 @@ using System.Web;
 using System.Linq;
 using System;
 using System.IO;
+using System.Configuration;
 
 namespace MWWebAPI.Controllers
 {
@@ -14,6 +15,7 @@ namespace MWWebAPI.Controllers
     [RoutePrefix("api")]
     public class ToolInventoryController : ApiController
     {
+        private static string imageLibrary = ConfigurationManager.AppSettings["imageLibrary"];
         DBToolInventoryRepository ToolInventoryRepo = new DBToolInventoryRepository();
         /*
         [Route("")]
@@ -329,7 +331,19 @@ namespace MWWebAPI.Controllers
         public ToolInventorySearchResults ToolInventorySearchSelected(ToolInventorySearch toolInventorySearch)
         {
             return ToolInventoryRepo.ToolInventorySearchSelected(toolInventorySearch);
-        }       
+        }
+
+        [Route("LinkTool")]
+        [HttpPost]
+        public APIResponse LinkTool(LinkToolRequest linkToolRequest)
+        {
+            DBResponse dbResponse = ToolInventoryRepo.LinkTool(linkToolRequest);
+            return new APIResponse
+            {
+                ResponseCode = 0,
+                ResponseText = linkToolRequest.Action + " successful."
+            };
+        }
 
         [Route("CheckOutCheckIn")]
         [HttpPost]
@@ -353,6 +367,27 @@ namespace MWWebAPI.Controllers
                 ResponseCode = 0,
                 ResponseText = "Save LookupCategory successful."
             };
+        }
+        [Route("UploadToolImage")]
+        [HttpPost]
+        public void UploadToolImage()
+        {
+            if (HttpContext.Current.Request.Files.AllKeys.Any())
+            {
+                // Get the uploaded image from the Files collection
+                var httpPostedFile = HttpContext.Current.Request.Files["UploadedImage"];
+
+                if (httpPostedFile != null)
+                {
+                    int toolID = Convert.ToInt32(HttpContext.Current.Request["ToolID"]);
+                    string fileName = httpPostedFile.FileName.Substring(httpPostedFile.FileName.LastIndexOf('.'));
+                    var fileSavePath = 
+                        string.Format("{0}/ToolInventory/{2}.{3}", imageLibrary+"", toolID, fileName);
+
+                    httpPostedFile.SaveAs(fileSavePath);
+                    ToolInventoryRepo.SaveToolImageInfo(toolID, fileName);
+                }
+            }
         }
     } 
 }
