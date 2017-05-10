@@ -15,7 +15,8 @@ namespace MWWebAPI.DBRepository
 {
        public class DBToolInventoryRepository : DBRepositoryBase, IDisposable
     {
-        private static string imageLibrary = ConfigurationManager.AppSettings["imageLibrary"];
+        //private static string imageLibrary = ConfigurationManager.AppSettings["imageLibrary"];
+        private static string imageUrl = ConfigurationManager.AppSettings["imageUrl"];
         public string[] GetCuttingMethodTemplate(string cuttingMethod)
         {
             List<string> retTemplate = new List<string>();
@@ -393,7 +394,7 @@ namespace MWWebAPI.DBRepository
                             toolInventorySearchResult.ToolGroupNumber = reader["ToolGroupNumber"].ToString();
                             toolInventorySearchResult.UnitPrice = reader["UnitPrice"].ToString();
                             toolInventorySearchResult.PackSize = reader["PackSize"].ToString();
-                            toolInventorySearchResult.ImagePath = imageLibrary + reader["ImagePath"].ToString();
+                            toolInventorySearchResult.ImagePath = imageUrl + reader["ImagePath"].ToString();
                             if (reader["LinkedTools"].ToString() != string.Empty)
                             {
                                 var linkedTools = reader["LinkedTools"].ToString().Split(',').ToList();
@@ -406,7 +407,7 @@ namespace MWWebAPI.DBRepository
                                         {
                                             ID = Convert.ToInt32(arrlinkTool[0]),
                                             Description = arrlinkTool[1],
-                                            ImagePath = imageLibrary + arrlinkTool[2]
+                                            ImagePath = imageUrl + arrlinkTool[2]
                                 }
                                     );
                                 }
@@ -1676,7 +1677,7 @@ namespace MWWebAPI.DBRepository
 
                         foreach (LookupCategoryValue item in saveLookupCategoryRequest.LookupCategoryValues)
                         {
-                            sbValue.AppendFormat("{0}:{1}|{2},", item.ID, item.Value, item.Active);
+                            sbValue.AppendFormat("{0}^{1};{2}|{3},", item.ID, item.Value, item.Text, item.Active);
                         }
 
                         cmd.Parameters.Add("@Values", SqlDbType.VarChar).Value = sbValue.Remove(sbValue.Length - 1, 1).ToString();

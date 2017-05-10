@@ -16,6 +16,7 @@ namespace MWWebAPI.Controllers
     public class ToolInventoryController : ApiController
     {
         private static string imageLibrary = ConfigurationManager.AppSettings["imageLibrary"];
+        private static string imageUrl = ConfigurationManager.AppSettings["imageUrl"];
         DBToolInventoryRepository ToolInventoryRepo = new DBToolInventoryRepository();
         /*
         [Route("")]
@@ -380,9 +381,10 @@ namespace MWWebAPI.Controllers
                 if (httpPostedFile != null)
                 {
                     int toolID = Convert.ToInt32(HttpContext.Current.Request["ToolID"]);
-                    string fileName = httpPostedFile.FileName.Substring(httpPostedFile.FileName.LastIndexOf('.'));
+                    string fileFormat = httpPostedFile.FileName.Substring(httpPostedFile.FileName.LastIndexOf('.')+1);
+                    string fileName = string.Format("{0}.{1}", toolID, fileFormat);
                     var fileSavePath = 
-                        string.Format("{0}/ToolInventory/{2}.{3}", imageLibrary+"", toolID, fileName);
+                        string.Format("{0}\\ToolInventory\\{1}.{2}", imageLibrary+"", toolID, fileFormat);
 
                     httpPostedFile.SaveAs(fileSavePath);
                     ToolInventoryRepo.SaveToolImageInfo(toolID, fileName);
