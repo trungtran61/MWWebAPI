@@ -430,6 +430,8 @@ namespace MWWebAPI.DBRepository
                 {
                     cmd.CommandText = "ToolInventorySearch";
                     cmd.CommandType = CommandType.StoredProcedure;
+                    if (toolInventorySearch.Code.Length > 0 && toolInventorySearch.Code[0] != string.Empty)
+                        cmd.Parameters.Add("@Code", SqlDbType.VarChar).Value =  string.Join(";",toolInventorySearch.Code);
                     if (!string.IsNullOrEmpty(toolInventorySearch.Name))
                         cmd.Parameters.Add("@Name", SqlDbType.VarChar, 50).Value = toolInventorySearch.Name;
                     if (!string.IsNullOrEmpty(toolInventorySearch.ItemNumber))
