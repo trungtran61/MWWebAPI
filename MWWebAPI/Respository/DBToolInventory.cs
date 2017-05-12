@@ -13,7 +13,7 @@ using System.Web.Hosting;
 
 namespace MWWebAPI.DBRepository
 {
-       public class DBToolInventoryRepository : DBRepositoryBase, IDisposable
+    public class DBToolInventoryRepository : DBRepositoryBase, IDisposable
     {
         //private static string imageLibrary = ConfigurationManager.AppSettings["imageLibrary"];
         private static string imageUrl = ConfigurationManager.AppSettings["imageUrl"];
@@ -234,7 +234,7 @@ namespace MWWebAPI.DBRepository
                             sbItemQty.AppendFormat("{0}:{1},", item.ID, item.Qty);
                         }
 
-                        cmd.Parameters.Add("@Items_Qtys", SqlDbType.VarChar).Value = sbItemQty.Remove(sbItemQty.Length - 1,1).ToString();
+                        cmd.Parameters.Add("@Items_Qtys", SqlDbType.VarChar).Value = sbItemQty.Remove(sbItemQty.Length - 1, 1).ToString();
                         con.Open();
                         int rowsAffected = cmd.ExecuteNonQuery();
                         dbResponse.RecordsAffected = rowsAffected;
@@ -408,10 +408,27 @@ namespace MWWebAPI.DBRepository
                                             ID = Convert.ToInt32(arrlinkTool[0]),
                                             Description = arrlinkTool[1],
                                             ImagePath = imageUrl + arrlinkTool[2]
-                                }
+                                        }
                                     );
                                 }
-                            }                            
+                                toolInventorySearchResult.VendorInfo =
+                                    new VendorInfo
+                                    {
+                                        Address1 = reader["Address1"].ToString(),
+                                        Address2 = reader["Address2"].ToString(),
+                                        City = reader["City"].ToString(),
+                                        State = reader["State"].ToString(),
+                                        Zip = reader["Zip"].ToString(),
+                                        Country = reader["Country"].ToString(),
+                                        Phone = reader["Phone"].ToString(),
+                                        Fax = reader["Fax"].ToString(),
+                                        Mobile = reader["Mobile"].ToString(),
+                                        Website = reader["Website"].ToString(),
+                                        Email = reader["Email"].ToString(),
+                                        TollFree = reader["Tollfree"].ToString()
+
+                                    };
+                            }
                         }
                     }
                 }
@@ -431,7 +448,7 @@ namespace MWWebAPI.DBRepository
                     cmd.CommandText = "ToolInventorySearch";
                     cmd.CommandType = CommandType.StoredProcedure;
                     if (toolInventorySearch.Code.Length > 0 && toolInventorySearch.Code[0] != string.Empty)
-                        cmd.Parameters.Add("@Code", SqlDbType.VarChar).Value =  string.Join(";",toolInventorySearch.Code);
+                        cmd.Parameters.Add("@Code", SqlDbType.VarChar).Value = string.Join(";", toolInventorySearch.Code);
                     if (!string.IsNullOrEmpty(toolInventorySearch.Name))
                         cmd.Parameters.Add("@Name", SqlDbType.VarChar, 50).Value = toolInventorySearch.Name;
                     if (!string.IsNullOrEmpty(toolInventorySearch.ItemNumber))
@@ -520,7 +537,7 @@ namespace MWWebAPI.DBRepository
                                 PackSize = reader["PackSize"].ToString()
                             }
                             );
-                        }                       
+                        }
                     }
                 }
             }
@@ -604,7 +621,7 @@ namespace MWWebAPI.DBRepository
             LookupCategories lookupCategories = new LookupCategories();
             bool firstRecord = true;
             lookupCategories.lookupCategoryValues = new List<LookupCategoryValue>();
- 
+
             using (SqlConnection conn = new SqlConnection(MWConnectionString))
             {
                 using (SqlCommand cmd = new SqlCommand())
@@ -613,7 +630,7 @@ namespace MWWebAPI.DBRepository
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Add("@PageNumber", SqlDbType.Int).Value = lookupCategorySearch.PageNumber;
                     cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = lookupCategorySearch.PageSize;
-                    cmd.Parameters.Add("@Category", SqlDbType.VarChar).Value =lookupCategorySearch.Category;
+                    cmd.Parameters.Add("@Category", SqlDbType.VarChar).Value = lookupCategorySearch.Category;
 
                     cmd.Connection = conn;
                     conn.Open();
@@ -644,7 +661,7 @@ namespace MWWebAPI.DBRepository
             return lookupCategories;
         }
         //
-        public List<ToolInventoryColumn> GetSelectedToolInventoryColumns(string codes, bool searchableOnly=false)
+        public List<ToolInventoryColumn> GetSelectedToolInventoryColumns(string codes, bool searchableOnly = false)
         {
             List<ToolInventoryColumn> toolInventoryColumns = new List<ToolInventoryColumn>();
             using (SqlConnection conn = new SqlConnection(MWConnectionString))
@@ -675,7 +692,7 @@ namespace MWWebAPI.DBRepository
                                 UISize = Convert.ToInt16(reader["UISize"].ToString()),
                                 PropertyName = reader["PropertyName"].ToString(),
                                 Required = (reader.GetBoolean(reader.GetOrdinal("Required")) ? "required" : "")
-                        };
+                            };
                             toolInventoryColumns.Add(toolInventoryColumn);
                         }
                     }
@@ -1080,7 +1097,7 @@ namespace MWWebAPI.DBRepository
 
             return ConversionRules;
         }
-                
+
 
         public List<string> GetLookUpCategories(string searchTerm)
         {
@@ -1526,7 +1543,7 @@ namespace MWWebAPI.DBRepository
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Add("@Code", SqlDbType.VarChar, 50).Value = copyCodeColumnsRequest.Code;
-                        cmd.Parameters.Add("@CopyToCode", SqlDbType.VarChar, 50).Value = copyCodeColumnsRequest.CopyToCode;                        
+                        cmd.Parameters.Add("@CopyToCode", SqlDbType.VarChar, 50).Value = copyCodeColumnsRequest.CopyToCode;
                         con.Open();
                         int rowsAffected = cmd.ExecuteNonQuery();
                         dbResponse.RecordsAffected = rowsAffected;
@@ -1622,7 +1639,7 @@ namespace MWWebAPI.DBRepository
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.CommandText = "GetToolNames";
-                    cmd.CommandType = CommandType.StoredProcedure;                  
+                    cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Connection = conn;
                     cmd.Parameters.Add("@SearchTerm", SqlDbType.VarChar, 50).Value = searchTerm;
                     conn.Open();
@@ -1651,14 +1668,14 @@ namespace MWWebAPI.DBRepository
                         cmd.Parameters.Add("@ToolID", SqlDbType.Int).Value = toolID;
                         cmd.Parameters.Add("@FileName", SqlDbType.VarChar, 50).Value = fileName;
                         con.Open();
-                        int rowsAffected = cmd.ExecuteNonQuery();                       
+                        int rowsAffected = cmd.ExecuteNonQuery();
                     }
                     con.Close();
                 }
             }
             catch
             {
-               throw;
+                throw;
             }
 
         }
