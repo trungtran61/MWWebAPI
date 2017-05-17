@@ -307,6 +307,73 @@ namespace MWWebAPI.DBRepository
 
             return dbResponse;
         }
+
+        public DBResponse AttachVendor(LinkToolRequest linkToolRequest)
+        {
+            DBResponse dbResponse = new DBResponse();
+            StringBuilder sbChildIDs = new StringBuilder();
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(MWConnectionString))
+                {
+                    using (SqlCommand cmd = new SqlCommand("LinkTool", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Add("@Action", SqlDbType.VarChar, 10).Value = linkToolRequest.Action;
+                        cmd.Parameters.Add("@ParentID", SqlDbType.Int).Value = linkToolRequest.ParentID;
+
+                        foreach (int childID in linkToolRequest.ChildIDs)
+                        {
+                            sbChildIDs.AppendFormat("{0},", childID);
+                        }
+
+                        cmd.Parameters.Add("@ChildIDs", SqlDbType.VarChar).Value = sbChildIDs.Remove(sbChildIDs.Length - 1, 1).ToString();
+                        con.Open();
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        dbResponse.RecordsAffected = rowsAffected;
+
+                        if (rowsAffected > 0)
+                        {
+                            dbResponse.ReturnCode = 0;
+                        }
+                        else
+                        {
+                            dbResponse.ReturnCode = -1;
+                            dbResponse.Message = "No update";
+                        }
+                    }
+                    con.Close();
+                }
+            }
+            catch
+            {
+                dbResponse.ReturnCode = -1;
+                throw;
+            }
+
+            return dbResponse;
+        }
+
+        public int UpdateToolVendor(ToolInventorySearchResult toolInventorySearchResult)
+        {
+            using (SqlConnection conn = new SqlConnection(MWConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.CommandText = "UpdateToolVendor";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@ToolID", SqlDbType.Int).Value = toolInventorySearchResult.ID;  
+                    if (!String.IsNullOrEmpty(toolInventorySearchResult.VendorID))
+                        cmd.Parameters.Add("@VendorID", SqlDbType.Int).Value = toolInventorySearchResult.VendorID;
+
+                    cmd.Connection = conn;
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            return toolInventorySearchResult.ID;
+        }
         public int SaveToolDetails(ToolInventorySearchResult toolInventorySearchResult)
         {
             using (SqlConnection conn = new SqlConnection(MWConnectionString))
@@ -368,7 +435,7 @@ namespace MWWebAPI.DBRepository
                     {
                         while (reader.Read())
                         {
-                            toolInventorySearchResult.ID = Convert.ToInt32(reader["ID"].ToString());
+                            toolInventorySearchResult.ID = Convert.ToInt32(reader["ID"].ToString());                           
                             toolInventorySearchResult.Unit = reader["Unit"].ToString();
                             toolInventorySearchResult.Code = reader["Code"].ToString();
                             toolInventorySearchResult.Name = reader["Name"].ToString();
@@ -410,25 +477,26 @@ namespace MWWebAPI.DBRepository
                                             ImagePath = imageUrl + arrlinkTool[2]
                                         }
                                     );
-                                }
-                                toolInventorySearchResult.VendorInfo =
-                                    new VendorInfo
-                                    {
-                                        Address1 = reader["Address1"].ToString(),
-                                        Address2 = reader["Address2"].ToString(),
-                                        City = reader["City"].ToString(),
-                                        State = reader["State"].ToString(),
-                                        Zip = reader["Zip"].ToString(),
-                                        Country = reader["Country"].ToString(),
-                                        Phone = reader["Phone"].ToString(),
-                                        Fax = reader["Fax"].ToString(),
-                                        Mobile = reader["Mobile"].ToString(),
-                                        Website = reader["Website"].ToString(),
-                                        Email = reader["Email"].ToString(),
-                                        TollFree = reader["Tollfree"].ToString()
-
-                                    };
+                                }                               
                             }
+                            toolInventorySearchResult.VendorInfo =
+                                   new VendorInfo
+                                   {
+                                       CompanyName = reader["CompanyName"].ToString(),
+                                       Address1 = reader["Address1"].ToString(),
+                                       Address2 = reader["Address2"].ToString(),
+                                       City = reader["City"].ToString(),
+                                       State = reader["State"].ToString(),
+                                       Zip = reader["Zip"].ToString(),
+                                       Country = reader["Country"].ToString(),
+                                       Phone = reader["Phone"].ToString(),
+                                       Fax = reader["Fax"].ToString(),
+                                       Mobile = reader["Mobile"].ToString(),
+                                       Website = reader["Website"].ToString(),
+                                       Email = reader["Email"].ToString(),
+                                       TollFree = reader["Tollfree"].ToString()
+
+                                   };
                         }
                     }
                 }
@@ -688,6 +756,7 @@ namespace MWWebAPI.DBRepository
                             {
                                 Name = reader["ColumnName"].ToString(),
                                 Header = reader["ColumnHeader"].ToString(),
+                                Sequence = Convert.ToInt16(reader["Sequence"].ToString()),
                                 InputType = reader["InputType"].ToString(),
                                 UISize = Convert.ToInt16(reader["UISize"].ToString()),
                                 PropertyName = reader["PropertyName"].ToString(),
@@ -699,6 +768,41 @@ namespace MWWebAPI.DBRepository
                 }
             }
             return toolInventoryColumns;
+        }
+
+        public List<ToolCuttingMethod> GetToolCuttingMethods(int ToolID, bool allMethods = true)
+        {
+            List<ToolCuttingMethod> toolCuttingMethods = new List<ToolCuttingMethod>();
+            using (SqlConnection conn = new SqlConnection(MWConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.CommandText = "GetToolCuttingMethods";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@ToolID", SqlDbType.Int).Value = ToolID;
+                    cmd.Parameters.Add("@AllMethods", SqlDbType.Bit).Value = (allMethods) ? 1 : 0;
+
+                    cmd.Connection = conn;
+                    conn.Open();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {                            
+                            toolCuttingMethods.Add(
+                                 new ToolCuttingMethod
+                                 {
+                                     ID = Convert.ToInt32(reader["ID"].ToString()),
+                                     Text = reader["Text"].ToString(),
+                                     Value = reader["Value"].ToString(),
+                                     Connected = (reader.GetBoolean(reader.GetOrdinal("Connected")) ? true : false)                                     
+                                 }
+                                );
+                        }
+                    }
+                }
+            }
+            return toolCuttingMethods;
         }
         public List<ToolInventoryCodeColumn> GetToolInventoryColumnsByCode(string code)
         {
@@ -1654,6 +1758,71 @@ namespace MWWebAPI.DBRepository
                 }
             }
             return toolNames;
+        }
+
+        public VendorInfo GetVendorInfo(int ID)
+        {
+            VendorInfo vendorInfo = new VendorInfo();
+            using (SqlConnection conn = new SqlConnection(MWConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.CommandText = "GetVendorInfo";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Connection = conn;
+                    cmd.Parameters.Add("@ID", SqlDbType.Int).Value = ID;
+                    conn.Open();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            vendorInfo.Address1 = reader["Address1"].ToString();
+                            vendorInfo.Address2 = reader["Address2"].ToString();
+                            vendorInfo.City = reader["City"].ToString();
+                            vendorInfo.State = reader["State"].ToString();
+                            vendorInfo.Zip = reader["Zip"].ToString();
+                            vendorInfo.Country = reader["Country"].ToString();
+                            vendorInfo.Phone = reader["Phone"].ToString();
+                            vendorInfo.Fax = reader["Fax"].ToString();
+                            vendorInfo.Mobile = reader["Mobile"].ToString();
+                            vendorInfo.Website = reader["Website"].ToString();
+                            vendorInfo.Email = reader["Email"].ToString();
+                            vendorInfo.TollFree = reader["Tollfree"].ToString();
+                        }
+                    }
+                }
+            }
+            return vendorInfo;
+        }
+        public List<Company> GetVendors(string searchTerm)
+        {
+            List<Company> companies = new List<Company>();
+            using (SqlConnection conn = new SqlConnection(MWConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.CommandText = "GetVendors";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Connection = conn;
+                    cmd.Parameters.Add("@SearchTerm", SqlDbType.VarChar, 50).Value = searchTerm;
+                    conn.Open();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            companies.Add(new Company
+                            {
+                                ID = Convert.ToInt32(reader["ID"].ToString()),
+                                CompanyName = reader["CompanyName"].ToString(),
+                                CompanyID = reader["CompanyID"].ToString()
+                            });
+                        }
+                    }
+                }
+            }
+            return companies;
         }
 
         public void SaveToolImageInfo(int toolID, string fileName)

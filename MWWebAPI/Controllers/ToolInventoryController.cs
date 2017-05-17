@@ -312,6 +312,13 @@ namespace MWWebAPI.Controllers
             return ToolInventoryRepo.SaveToolDetails(toolInventorySearchResult);
         }
 
+        [Route("UpdateToolVendor")]
+        [HttpPost]
+        public int UpdateToolVendor(ToolInventorySearchResult toolInventorySearchResult)
+        {
+            return ToolInventoryRepo.UpdateToolVendor(toolInventorySearchResult);
+        }
+
         [Route("ToolInventorySearch")]
         [HttpPost]
         public ToolInventorySearchResults ToolInventorySearch(ToolInventorySearch toolInventorySearch)
@@ -324,6 +331,24 @@ namespace MWWebAPI.Controllers
         public LookupCategories GetLookUpCategory(LookupCategorySearch lookupCategorySearch)
         {
             return ToolInventoryRepo.GetLookUpCategory(lookupCategorySearch);
+        }
+
+        [Route("GetToolCuttingMethods/{ToolID}/{AllMethods}")]
+        public List<ToolCuttingMethod> GetToolCuttingMethods(int ToolID, bool allMethods = true)
+        {
+            return ToolInventoryRepo.GetToolCuttingMethods(ToolID, allMethods);
+        }
+
+        [Route("GetVendors/{searchTerm?}")]
+        public List<Company> GetVendors(string searchTerm = "")
+        {
+            return ToolInventoryRepo.GetVendors(searchTerm);
+        }
+
+        [Route("GetVendorInfo/{ID}")]
+        public VendorInfo GetVendorInfo(int ID)
+        {
+            return ToolInventoryRepo.GetVendorInfo(ID);
         }
         //public LookupCategories GetLookUpCategory(LookupCategorySearch lookupCategorySearch)
 

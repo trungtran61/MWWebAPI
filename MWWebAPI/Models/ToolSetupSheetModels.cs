@@ -222,7 +222,14 @@ namespace MWWebAPI.Models
         public string ModifiedBy { get; set; }
         public List<LookupCategoryValue> LookupCategoryValues { get; set; }
     }
-    public class ToolInventoryColumn
+    public class ToolCuttingMethod
+    {
+        public int ID { get; set; }
+        public string Text { get; set; }
+        public string Value { get; set; }
+        public bool Connected { get; set; }
+    }
+        public class ToolInventoryColumn
     {
         public string Name { get; set; }
         public string Header { get; set; }
@@ -288,6 +295,7 @@ namespace MWWebAPI.Models
         public string Name { get; set; }
         public string ItemNumber { get; set; }
         public string Manufacturer { get; set; }
+        public string VendorID { get; set; }
         public string MWID { get; set; }
         public string Location { get; set; }
         public string Radius { get; set; }
@@ -295,6 +303,7 @@ namespace MWWebAPI.Models
         public string NumOfCutters { get; set; }
         public string Material { get; set; }
         public string Grade { get; set; }
+
         public string OnHand { get; set; }
         public string ChipBreaker { get; set; }
         public string CheckedOut { get; set; }
@@ -345,6 +354,14 @@ namespace MWWebAPI.Models
         public int ID { get; set; }
         public string Text { get; set; }
         public string Value { get; set; }
+        public bool Active { get; set; }
+    }
+
+    public class Company
+    {
+        public int ID { get; set; }
+        public string CompanyName { get; set; }
+        public string CompanyID { get; set; }
         public bool Active { get; set; }
     }
 
