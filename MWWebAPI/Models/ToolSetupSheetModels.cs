@@ -241,8 +241,8 @@ namespace MWWebAPI.Models
         public string InputType { get; set; }
         public int UISize { get; set; }
         public string PropertyName { get; set; }
-        public bool Show { get; set; }
-        public string Required { get; set; }
+        public bool Display { get; set; }
+        public string Required { get; set; }        
 
     }
 
@@ -311,18 +311,86 @@ namespace MWWebAPI.Models
         public string Description { get; set; }
         public string ExternalLocation { get; set; }
         public string CategoryName { get; set; }
+        public string CategoryID { get; set; }
         public string Status { get; set; }
+        public string StatusID { get; set; }
+        public string isLocked { get; set; }
+        public string OrderPoint { get; set; }
+        public string InventoryLevel { get; set; }
+        public string ToolGroupNumber { get; set; }
+        public string UnitPrice { get; set; }
+        public string PackSize { get; set; }        
+        public string ImagePath { get; set; }
+        public string Angle { get; set; }
+        public string Diameter { get; set; }
+        public string Direction { get; set; }
+        public string FluteLength { get; set; }
+        public string ImageCode { get; set; }
+        public string isSent { get; set; }
+        public string LBS { get; set; }
+        public string MachineNumber { get; set; }
+        public string MaxDepthOfCut { get; set; }
+        public string NewAppDate { get; set; }
+        public string NumOfFlutes { get; set; }
+        public string OAL { get; set; }
+        public string POID { get; set; }
+        public string ShankDiameter { get; set; }
+        public string StationNumber { get; set; }
+        public string OrderApproved { get; set; }
+        public string Width { get; set; }
+        public List<LinkedTool> LinkedTools { get; set; }
+        public VendorInfo VendorInfo { get; set; }
+    }
+
+    public class ToolInventorySaveRequest
+    {
+        public int ID { get; set; }
+        public string Unit { get; set; }
+        public string Code { get; set; }
+        public string Name { get; set; }
+        public string ItemNumber { get; set; }
+        public string Manufacturer { get; set; }
+        public string VendorID { get; set; }
+        public string MWID { get; set; }
+        public string Location { get; set; }
+        public string Radius { get; set; }
+        public string NumOfCutters { get; set; }
+        public string Material { get; set; }
+        public string Grade { get; set; }
+
+        public string OnHand { get; set; }
+        public string ChipBreaker { get; set; }
+        public string CheckedOut { get; set; }
+        public string Comment { get; set; }
+        public string Description { get; set; }
+        public string ExternalLocation { get; set; }
+        public string CategoryID { get; set; }
+        public string StatusID { get; set; }
         public string isLocked { get; set; }
         public string OrderPoint { get; set; }
         public string InventoryLevel { get; set; }
         public string ToolGroupNumber { get; set; }
         public string UnitPrice { get; set; }
         public string PackSize { get; set; }
-        public string CategoryID { get; set; }
-        public string StatusID { get; set; }
         public string ImagePath { get; set; }
-        public List<LinkedTool> LinkedTools { get; set; }
-        public VendorInfo VendorInfo { get; set; }
+        public string Angle { get; set; }
+        public string Diameter { get; set; }
+        public string Direction { get; set; }
+        public string FluteLength { get; set; }
+        public string ImageCode { get; set; }
+        public string isSent { get; set; }
+        public string LBS { get; set; }
+        public string MachineNumber { get; set; }
+        public string MaxDepthOfCut { get; set; }
+        public string NewAppDate { get; set; }
+        public string NumOfFlutes { get; set; }
+        public string OAL { get; set; }
+        public string POID { get; set; }
+        public string ShankDiameter { get; set; }
+        public string StationNumber { get; set; }
+        public string OrderApproved { get; set; }
+        public string Width { get; set; }
+        public string[] CuttingMethodID { get; set; }    
     }
 
     public class LinkedTool

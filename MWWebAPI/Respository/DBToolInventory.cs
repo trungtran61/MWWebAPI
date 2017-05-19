@@ -374,7 +374,7 @@ namespace MWWebAPI.DBRepository
             }
             return toolInventorySearchResult.ID;
         }
-        public int SaveToolDetails(ToolInventorySearchResult toolInventorySearchResult)
+        public int SaveToolDetails(ToolInventorySaveRequest toolInventorySaveRequest)
         {
             using (SqlConnection conn = new SqlConnection(MWConnectionString))
             {
@@ -382,36 +382,58 @@ namespace MWWebAPI.DBRepository
                 {
                     cmd.CommandText = "SaveToolDetails";
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@ToolID", SqlDbType.Int).Value = toolInventorySearchResult.ID;
-                    cmd.Parameters.Add("@Unit", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.Unit;
-                    cmd.Parameters.Add("@Code", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.Code;
-                    cmd.Parameters.Add("@Name", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.Name;
-                    cmd.Parameters.Add("@ItemNumber", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.ItemNumber;
-                    cmd.Parameters.Add("@Manufacturer", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.Manufacturer;
-                    cmd.Parameters.Add("@Location", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.Location;
-                    cmd.Parameters.Add("@CuttingMethods", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.CuttingMethods;
-                    cmd.Parameters.Add("@Material", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.Material;
-                    cmd.Parameters.Add("@Grade", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.Grade;
-                    cmd.Parameters.Add("@OnHand", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.OnHand;
-                    cmd.Parameters.Add("@ChipBreaker", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.ChipBreaker;
-                    cmd.Parameters.Add("@CheckedOut", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.CheckedOut;
-                    cmd.Parameters.Add("@Comment", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.Comment;
-                    cmd.Parameters.Add("@Description", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.Description;
-                    cmd.Parameters.Add("@ExternalLocation", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.ExternalLocation;
-                    cmd.Parameters.Add("@CategoryName", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.CategoryName;
-                    cmd.Parameters.Add("@Status", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.Status;
-                    cmd.Parameters.Add("@isLocked", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.isLocked;
-                    cmd.Parameters.Add("@OrderPoint", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.OrderPoint;
-                    cmd.Parameters.Add("@InventoryLevel", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.InventoryLevel;
-                    cmd.Parameters.Add("@ToolGroupNumber", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.ToolGroupNumber;
-                    cmd.Parameters.Add("@UnitPrice", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.UnitPrice;
-                    cmd.Parameters.Add("@PackSize", SqlDbType.VarChar, 50).Value = toolInventorySearchResult.PackSize;
+                    cmd.Parameters.Add("@ID", SqlDbType.Int).Value = toolInventorySaveRequest.ID;
+                    cmd.Parameters.Add("@Angle", SqlDbType.NVarChar, 100).Value = toolInventorySaveRequest.Angle;
+                    cmd.Parameters.Add("@CategoryID", SqlDbType.Int).Value = toolInventorySaveRequest.CategoryID;
+                    cmd.Parameters.Add("@CheckedOut", SqlDbType.Int).Value = toolInventorySaveRequest.CheckedOut;
+                    cmd.Parameters.Add("@ChipBreaker", SqlDbType.NVarChar, 200).Value = toolInventorySaveRequest.ChipBreaker;
+                    cmd.Parameters.Add("@Code", SqlDbType.NVarChar, 100).Value = toolInventorySaveRequest.Code;
+                    cmd.Parameters.Add("@Comment", SqlDbType.NVarChar, 510).Value = toolInventorySaveRequest.Comment;
+                    cmd.Parameters.Add("@CuttingMethodIDs", SqlDbType.VarChar).Value =
+                            string.Join(",", toolInventorySaveRequest.CuttingMethodID);
+                    cmd.Parameters.Add("@Description", SqlDbType.VarChar, 1000).Value = toolInventorySaveRequest.Description;
+                    cmd.Parameters.Add("@Diameter", SqlDbType.NVarChar, 100).Value = toolInventorySaveRequest.Diameter;
+                    cmd.Parameters.Add("@Direction", SqlDbType.NVarChar, 200).Value = toolInventorySaveRequest.Direction;
+                    cmd.Parameters.Add("@ExternalLocation", SqlDbType.NVarChar, 200).Value = toolInventorySaveRequest.ExternalLocation;
+                    cmd.Parameters.Add("@FluteLength", SqlDbType.NVarChar, 100).Value = toolInventorySaveRequest.FluteLength;
+                    cmd.Parameters.Add("@Grade", SqlDbType.NVarChar, 100).Value = toolInventorySaveRequest.Grade;                   
+                    cmd.Parameters.Add("@ImageCode", SqlDbType.NVarChar, 40).Value = toolInventorySaveRequest.ImageCode;
+                    cmd.Parameters.Add("@InventoryLevel", SqlDbType.Decimal).Value = toolInventorySaveRequest.InventoryLevel;
+                    cmd.Parameters.Add("@isLocked", SqlDbType.Bit).Value = toolInventorySaveRequest.isLocked;
+                    cmd.Parameters.Add("@isSent", SqlDbType.Bit).Value = toolInventorySaveRequest.isSent;
+                    cmd.Parameters.Add("@ItemNumber", SqlDbType.NVarChar, 100).Value = toolInventorySaveRequest.ItemNumber;
+                    cmd.Parameters.Add("@LBS", SqlDbType.Decimal).Value = toolInventorySaveRequest.LBS;
+                    cmd.Parameters.Add("@Location", SqlDbType.NVarChar, 200).Value = toolInventorySaveRequest.Location;
+                    cmd.Parameters.Add("@MachineNumber", SqlDbType.VarChar, 20).Value = toolInventorySaveRequest.MachineNumber;
+                    cmd.Parameters.Add("@Manufacturer", SqlDbType.NVarChar, 200).Value = toolInventorySaveRequest.Manufacturer;
+                    cmd.Parameters.Add("@Material", SqlDbType.NVarChar, 100).Value = toolInventorySaveRequest.Material;
+                    cmd.Parameters.Add("@MaxDepthOfCut", SqlDbType.NVarChar, 100).Value = toolInventorySaveRequest.MaxDepthOfCut;
+                    cmd.Parameters.Add("@MWID", SqlDbType.NVarChar, 100).Value = toolInventorySaveRequest.MWID;
+                    cmd.Parameters.Add("@Name", SqlDbType.NVarChar, 200).Value = toolInventorySaveRequest.Name;
+                    cmd.Parameters.Add("@NewAppDate", SqlDbType.DateTime).Value = toolInventorySaveRequest.NewAppDate;
+                    cmd.Parameters.Add("@NumOfCutters", SqlDbType.Int).Value = toolInventorySaveRequest.NumOfCutters;
+                    cmd.Parameters.Add("@NumOfFlutes", SqlDbType.Int).Value = toolInventorySaveRequest.NumOfFlutes;
+                    cmd.Parameters.Add("@OAL", SqlDbType.NVarChar, 100).Value = toolInventorySaveRequest.OAL;
+                    cmd.Parameters.Add("@OnHand", SqlDbType.Int).Value = toolInventorySaveRequest.OnHand;
+                    cmd.Parameters.Add("@OrderApproved", SqlDbType.Int).Value = toolInventorySaveRequest.OrderApproved;
+                    cmd.Parameters.Add("@OrderPoint", SqlDbType.Decimal).Value = toolInventorySaveRequest.OrderPoint;
+                    cmd.Parameters.Add("@PackSize", SqlDbType.Decimal).Value = toolInventorySaveRequest.PackSize;
+                    cmd.Parameters.Add("@POID", SqlDbType.Int).Value = toolInventorySaveRequest.POID;
+                    cmd.Parameters.Add("@Radius", SqlDbType.NVarChar, 100).Value = toolInventorySaveRequest.Radius;
+                    cmd.Parameters.Add("@ShankDiameter", SqlDbType.NVarChar, 100).Value = toolInventorySaveRequest.ShankDiameter;
+                    cmd.Parameters.Add("@StationNumber", SqlDbType.VarChar, 20).Value = toolInventorySaveRequest.StationNumber;
+                    cmd.Parameters.Add("@StatusID", SqlDbType.Int).Value = toolInventorySaveRequest.StatusID;
+                    cmd.Parameters.Add("@ToolGroupNumber", SqlDbType.Int).Value = toolInventorySaveRequest.ToolGroupNumber;
+                    cmd.Parameters.Add("@Unit", SqlDbType.VarChar, 50).Value = toolInventorySaveRequest.Unit;
+                    cmd.Parameters.Add("@UnitPrice", SqlDbType.Money).Value = toolInventorySaveRequest.UnitPrice;
+                    cmd.Parameters.Add("@VendorID", SqlDbType.Int).Value = toolInventorySaveRequest.VendorID;
+                    cmd.Parameters.Add("@Width", SqlDbType.NVarChar, 100).Value = toolInventorySaveRequest.Width;
                     cmd.Connection = conn;
                     conn.Open();
-                    toolInventorySearchResult.ID = Convert.ToInt32(cmd.ExecuteScalar());
+                    toolInventorySaveRequest.ID = Convert.ToInt32(cmd.ExecuteScalar());
                 }
             }
-            return toolInventorySearchResult.ID;
+            return toolInventorySaveRequest.ID;
         }
         public ToolInventorySearchResult GetToolDetails(int ToolID)
         {
@@ -435,32 +457,54 @@ namespace MWWebAPI.DBRepository
                     {
                         while (reader.Read())
                         {
-                            toolInventorySearchResult.ID = Convert.ToInt32(reader["ID"].ToString());                           
-                            toolInventorySearchResult.Unit = reader["Unit"].ToString();
-                            toolInventorySearchResult.Code = reader["Code"].ToString();
-                            toolInventorySearchResult.Name = reader["Name"].ToString();
+                            toolInventorySearchResult.ID = Convert.ToInt32(reader["ID"].ToString());
                             toolInventorySearchResult.ItemNumber = reader["ItemNumber"].ToString();
-                            toolInventorySearchResult.Manufacturer = reader["Manufacturer"].ToString();
-                            toolInventorySearchResult.Location = reader["Location"].ToString();
-                            toolInventorySearchResult.CuttingMethods = reader["CuttingMethods"].ToString();
+                            toolInventorySearchResult.Name = reader["Name"].ToString();
+                            toolInventorySearchResult.CategoryName = reader["CategoryName"].ToString();
+                            toolInventorySearchResult.CategoryID = reader["CategoryID"].ToString();
+                            toolInventorySearchResult.MWID = reader["MWID"].ToString();
+                            toolInventorySearchResult.Radius = reader["Radius"].ToString();
+                            toolInventorySearchResult.Diameter = reader["Diameter"].ToString();
+                            toolInventorySearchResult.Angle = reader["Angle"].ToString();
+                            toolInventorySearchResult.Direction = reader["Direction"].ToString();
+                            toolInventorySearchResult.Width = reader["Width"].ToString();
+                            toolInventorySearchResult.NumOfCutters = reader["NumOfCutters"].ToString();
+                            toolInventorySearchResult.MaxDepthOfCut = reader["MaxDepthOfCut"].ToString();
+                            toolInventorySearchResult.NumOfFlutes = reader["NumOfFlutes"].ToString();
+                            toolInventorySearchResult.FluteLength = reader["FluteLength"].ToString();
+                            toolInventorySearchResult.OAL = reader["OAL"].ToString();
+                            toolInventorySearchResult.ShankDiameter = reader["ShankDiameter"].ToString();
+                            toolInventorySearchResult.ChipBreaker = reader["ChipBreaker"].ToString();
                             toolInventorySearchResult.Material = reader["Material"].ToString();
                             toolInventorySearchResult.Grade = reader["Grade"].ToString();
                             toolInventorySearchResult.OnHand = reader["OnHand"].ToString();
-                            toolInventorySearchResult.ChipBreaker = reader["ChipBreaker"].ToString();
                             toolInventorySearchResult.CheckedOut = reader["CheckedOut"].ToString();
-                            toolInventorySearchResult.Comment = reader["Comment"].ToString();
-                            toolInventorySearchResult.Description = reader["Description"].ToString();
+                            toolInventorySearchResult.Location = reader["Location"].ToString();
                             toolInventorySearchResult.ExternalLocation = reader["ExternalLocation"].ToString();
-                            toolInventorySearchResult.CategoryID = reader["CategoryId"].ToString();
-                            toolInventorySearchResult.StatusID = reader["StatusId"].ToString();
-                            toolInventorySearchResult.CategoryName = reader["CategoryName"].ToString();
-                            toolInventorySearchResult.Status = reader["Status"].ToString();
-                            toolInventorySearchResult.isLocked = reader["isLocked"].ToString();
                             toolInventorySearchResult.OrderPoint = reader["OrderPoint"].ToString();
                             toolInventorySearchResult.InventoryLevel = reader["InventoryLevel"].ToString();
-                            toolInventorySearchResult.ToolGroupNumber = reader["ToolGroupNumber"].ToString();
                             toolInventorySearchResult.UnitPrice = reader["UnitPrice"].ToString();
+                            toolInventorySearchResult.Manufacturer = reader["Manufacturer"].ToString();
+                            toolInventorySearchResult.Code = reader["Code"].ToString();
+                            toolInventorySearchResult.VendorID = reader["VendorID"].ToString();
+                            toolInventorySearchResult.Comment = reader["Comment"].ToString();
+                            toolInventorySearchResult.Status = reader["Status"].ToString();
+                            toolInventorySearchResult.StatusID = reader["StatusID"].ToString();
+                            toolInventorySearchResult.ImageCode = reader["ImageCode"].ToString();
+                            toolInventorySearchResult.POID = reader["POID"].ToString();
                             toolInventorySearchResult.PackSize = reader["PackSize"].ToString();
+                            toolInventorySearchResult.Unit = reader["Unit"].ToString();
+                            toolInventorySearchResult.isLocked = reader["isLocked"].ToString();
+                            toolInventorySearchResult.ToolGroupNumber = reader["ToolGroupNumber"].ToString();
+                            toolInventorySearchResult.isSent = reader["isSent"].ToString();
+                            toolInventorySearchResult.Description = reader["Description"].ToString();
+                            toolInventorySearchResult.CuttingMethods = reader["CuttingMethods"].ToString();
+                            toolInventorySearchResult.OrderApproved = reader["OrderApproved"].ToString();
+                            toolInventorySearchResult.NewAppDate = reader["NewAppDate"].ToString();
+                            toolInventorySearchResult.MachineNumber = reader["MachineNumber"].ToString();
+                            toolInventorySearchResult.StationNumber = reader["StationNumber"].ToString();
+                            toolInventorySearchResult.LBS = reader["LBS"].ToString();
+                            toolInventorySearchResult.OAL = reader["OAL"].ToString();
                             toolInventorySearchResult.ImagePath = imageUrl + reader["ImagePath"].ToString();
                             if (reader["LinkedTools"].ToString() != string.Empty)
                             {
@@ -760,7 +804,8 @@ namespace MWWebAPI.DBRepository
                                 InputType = reader["InputType"].ToString(),
                                 UISize = Convert.ToInt16(reader["UISize"].ToString()),
                                 PropertyName = reader["PropertyName"].ToString(),
-                                Required = (reader.GetBoolean(reader.GetOrdinal("Required")) ? "required" : "")
+                                Required = (reader.GetBoolean(reader.GetOrdinal("Required")) ? "required" : ""),
+                                Display = (reader.GetBoolean(reader.GetOrdinal("Required")))
                             };
                             toolInventoryColumns.Add(toolInventoryColumn);
                         }

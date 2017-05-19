@@ -307,9 +307,9 @@ namespace MWWebAPI.Controllers
 
         [Route("SaveToolDetails")]
         [HttpPost]
-        public int SaveToolDetails(ToolInventorySearchResult toolInventorySearchResult)
+        public int SaveToolDetails(ToolInventorySaveRequest toolInventorySaveRequest)
         {
-            return ToolInventoryRepo.SaveToolDetails(toolInventorySearchResult);
+            return ToolInventoryRepo.SaveToolDetails(toolInventorySaveRequest);
         }
 
         [Route("UpdateToolVendor")]
