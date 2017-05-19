@@ -402,7 +402,8 @@ namespace MWWebAPI.DBRepository
                     cmd.Parameters.Add("@isLocked", SqlDbType.Bit).Value = toolInventorySaveRequest.isLocked;
                     cmd.Parameters.Add("@isSent", SqlDbType.Bit).Value = toolInventorySaveRequest.isSent;
                     cmd.Parameters.Add("@ItemNumber", SqlDbType.NVarChar, 100).Value = toolInventorySaveRequest.ItemNumber;
-                    cmd.Parameters.Add("@LBS", SqlDbType.Decimal).Value = toolInventorySaveRequest.LBS;
+                    if (!string.IsNullOrEmpty(toolInventorySaveRequest.LBS))
+                        cmd.Parameters.Add("@LBS", SqlDbType.Decimal).Value = toolInventorySaveRequest.LBS;
                     cmd.Parameters.Add("@Location", SqlDbType.NVarChar, 200).Value = toolInventorySaveRequest.Location;
                     cmd.Parameters.Add("@MachineNumber", SqlDbType.VarChar, 20).Value = toolInventorySaveRequest.MachineNumber;
                     cmd.Parameters.Add("@Manufacturer", SqlDbType.NVarChar, 200).Value = toolInventorySaveRequest.Manufacturer;
@@ -410,7 +411,8 @@ namespace MWWebAPI.DBRepository
                     cmd.Parameters.Add("@MaxDepthOfCut", SqlDbType.NVarChar, 100).Value = toolInventorySaveRequest.MaxDepthOfCut;
                     cmd.Parameters.Add("@MWID", SqlDbType.NVarChar, 100).Value = toolInventorySaveRequest.MWID;
                     cmd.Parameters.Add("@Name", SqlDbType.NVarChar, 200).Value = toolInventorySaveRequest.Name;
-                    cmd.Parameters.Add("@NewAppDate", SqlDbType.DateTime).Value = toolInventorySaveRequest.NewAppDate;
+                    if (!string.IsNullOrEmpty(toolInventorySaveRequest.NewAppDate))
+                        cmd.Parameters.Add("@NewAppDate", SqlDbType.DateTime).Value = toolInventorySaveRequest.NewAppDate;
                     cmd.Parameters.Add("@NumOfCutters", SqlDbType.Int).Value = toolInventorySaveRequest.NumOfCutters;
                     cmd.Parameters.Add("@NumOfFlutes", SqlDbType.Int).Value = toolInventorySaveRequest.NumOfFlutes;
                     cmd.Parameters.Add("@OAL", SqlDbType.NVarChar, 100).Value = toolInventorySaveRequest.OAL;
@@ -418,7 +420,8 @@ namespace MWWebAPI.DBRepository
                     cmd.Parameters.Add("@OrderApproved", SqlDbType.Int).Value = toolInventorySaveRequest.OrderApproved;
                     cmd.Parameters.Add("@OrderPoint", SqlDbType.Decimal).Value = toolInventorySaveRequest.OrderPoint;
                     cmd.Parameters.Add("@PackSize", SqlDbType.Decimal).Value = toolInventorySaveRequest.PackSize;
-                    cmd.Parameters.Add("@POID", SqlDbType.Int).Value = toolInventorySaveRequest.POID;
+                    if (!string.IsNullOrEmpty(toolInventorySaveRequest.POID))
+                        cmd.Parameters.Add("@POID", SqlDbType.Int).Value = toolInventorySaveRequest.POID;
                     cmd.Parameters.Add("@Radius", SqlDbType.NVarChar, 100).Value = toolInventorySaveRequest.Radius;
                     cmd.Parameters.Add("@ShankDiameter", SqlDbType.NVarChar, 100).Value = toolInventorySaveRequest.ShankDiameter;
                     cmd.Parameters.Add("@StationNumber", SqlDbType.VarChar, 20).Value = toolInventorySaveRequest.StationNumber;
@@ -805,7 +808,7 @@ namespace MWWebAPI.DBRepository
                                 UISize = Convert.ToInt16(reader["UISize"].ToString()),
                                 PropertyName = reader["PropertyName"].ToString(),
                                 Required = (reader.GetBoolean(reader.GetOrdinal("Required")) ? "required" : ""),
-                                Display = (reader.GetBoolean(reader.GetOrdinal("Required")))
+                                Display = (reader.GetBoolean(reader.GetOrdinal("Display")))
                             };
                             toolInventoryColumns.Add(toolInventoryColumn);
                         }
