@@ -374,6 +374,21 @@ namespace MWWebAPI.DBRepository
             }
             return toolInventorySearchResult.ID;
         }
+
+        public int CreateTool()
+        {
+            using (SqlConnection conn = new SqlConnection(MWConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.CommandText = "CreateTool";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Connection = conn;
+                    conn.Open();
+                    return Convert.ToInt32(cmd.ExecuteScalar());
+                }
+            }
+        }
         public int SaveToolDetails(ToolInventorySaveRequest toolInventorySaveRequest)
         {
             using (SqlConnection conn = new SqlConnection(MWConnectionString))

@@ -305,12 +305,20 @@ namespace MWWebAPI.Controllers
         }
 
 
+        [Route("CreateTool")]
+        [HttpPost]
+        public int CreateTool()
+        {
+            return ToolInventoryRepo.CreateTool();
+        }
+
         [Route("SaveToolDetails")]
         [HttpPost]
         public int SaveToolDetails(ToolInventorySaveRequest toolInventorySaveRequest)
         {
             return ToolInventoryRepo.SaveToolDetails(toolInventorySaveRequest);
         }
+        //
 
         [Route("UpdateToolVendor")]
         [HttpPost]
