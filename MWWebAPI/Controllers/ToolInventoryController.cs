@@ -307,9 +307,17 @@ namespace MWWebAPI.Controllers
 
         [Route("CreateTool")]
         [HttpPost]
-        public int CreateTool()
+        public int CreateTool(ToolInventorySaveRequest toolInventorySaveRequest)
         {
-            return ToolInventoryRepo.CreateTool();
+            return ToolInventoryRepo.CreateTool(toolInventorySaveRequest);
+        }
+
+
+        [Route("DeleteTool")]
+        [HttpPost]
+        public int DeleteTool(ToolInventorySaveRequest toolInventorySaveRequest)
+        {
+            return ToolInventoryRepo.DeleteTool(toolInventorySaveRequest.ID);
         }
 
         [Route("SaveToolDetails")]

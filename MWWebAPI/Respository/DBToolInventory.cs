@@ -375,7 +375,7 @@ namespace MWWebAPI.DBRepository
             return toolInventorySearchResult.ID;
         }
 
-        public int CreateTool()
+        public int CreateTool(ToolInventorySaveRequest toolInventorySaveRequest)
         {
             using (SqlConnection conn = new SqlConnection(MWConnectionString))
             {
@@ -383,9 +383,26 @@ namespace MWWebAPI.DBRepository
                 {
                     cmd.CommandText = "CreateTool";
                     cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@Code", SqlDbType.VarChar,50).Value = toolInventorySaveRequest.Code;
                     cmd.Connection = conn;
                     conn.Open();
                     return Convert.ToInt32(cmd.ExecuteScalar());
+                }
+            }
+        }
+
+        public int DeleteTool(int ToolID)
+        {
+            using (SqlConnection conn = new SqlConnection(MWConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.CommandText = "DeleteTool";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@ToolID", SqlDbType.Int).Value = ToolID;
+                    cmd.Connection = conn;
+                    conn.Open();
+                    return cmd.ExecuteNonQuery();
                 }
             }
         }
