@@ -250,7 +250,8 @@ namespace MWWebAPI.Models
     {
         public string Name { get; set; }
         public string Header { get; set; }
-        public bool Show { get; set; }        
+        public bool Show { get; set; }
+        public int Sequence { get; set; }
     }
 
     public class ToolInventorySearch

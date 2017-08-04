@@ -471,6 +471,26 @@ namespace MWWebAPI.DBRepository
             }
             return toolInventorySaveRequest.ID;
         }
+
+        public ToolInventorySearchResult CopyTool(int ToolID)
+        {
+            ToolInventorySearchResult toolInventorySearchResult = new ToolInventorySearchResult();           
+
+            using (SqlConnection conn = new SqlConnection(MWConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.CommandText = "CopyTool";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@ToolID", SqlDbType.Int).Value = ToolID;
+                    cmd.Connection = conn;
+                    conn.Open();
+                    ToolID = Convert.ToInt32(cmd.ExecuteScalar());
+                }
+            }
+
+            return GetToolDetails(ToolID);
+        }
         public ToolInventorySearchResult GetToolDetails(int ToolID)
         {
             ToolInventorySearchResult toolInventorySearchResult = new ToolInventorySearchResult();
@@ -906,6 +926,7 @@ namespace MWWebAPI.DBRepository
                             {
                                 Name = reader["ColumnName"].ToString(),
                                 Header = reader["ColumnHeader"].ToString(),
+                                Sequence = Convert.ToInt16(reader["Sequence"].ToString()),
                                 Show = Convert.ToBoolean(Convert.ToInt16(reader["Show"].ToString()))
                             };
                             toolInventoryColumns.Add(toolInventoryColumn);
@@ -1724,7 +1745,7 @@ namespace MWWebAPI.DBRepository
             {
                 using (SqlConnection con = new SqlConnection(MWConnectionString))
                 {
-                    using (SqlCommand cmd = new SqlCommand("spCopyToolInventoryCodeColumns", con))
+                    using (SqlCommand cmd = new SqlCommand("CopyToolInventoryCodeColumns", con))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Add("@Code", SqlDbType.VarChar, 50).Value = copyCodeColumnsRequest.Code;
@@ -1876,7 +1897,7 @@ namespace MWWebAPI.DBRepository
             }
             return vendorInfo;
         }
-        public List<Company> GetVendors(string searchTerm)
+        public List<Company> GetVendors(string searchTerm, int CategoryID)
         {
             List<Company> companies = new List<Company>();
             using (SqlConnection conn = new SqlConnection(MWConnectionString))
@@ -1887,6 +1908,7 @@ namespace MWWebAPI.DBRepository
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Connection = conn;
                     cmd.Parameters.Add("@SearchTerm", SqlDbType.VarChar, 50).Value = searchTerm;
+                    cmd.Parameters.Add("@CategoryID", SqlDbType.Int).Value = CategoryID;
                     conn.Open();
 
                     using (SqlDataReader reader = cmd.ExecuteReader())

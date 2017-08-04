@@ -304,6 +304,11 @@ namespace MWWebAPI.Controllers
             return ToolInventoryRepo.GetToolDetails(ToolID);
         }
 
+        [Route("CopyTool/{ToolID}")]
+        public ToolInventorySearchResult CopyTool(int ToolID)
+        {
+            return ToolInventoryRepo.CopyTool(ToolID);
+        }
 
         [Route("CreateTool")]
         [HttpPost]
@@ -355,10 +360,10 @@ namespace MWWebAPI.Controllers
             return ToolInventoryRepo.GetToolCuttingMethods(ToolID, allMethods);
         }
 
-        [Route("GetVendors/{searchTerm?}")]
-        public List<Company> GetVendors(string searchTerm = "")
+        [Route("GetVendors/{categoryID?}/{searchTerm?}")]
+        public List<Company> GetVendors(string searchTerm = "", int categoryID = 0)
         {
-            return ToolInventoryRepo.GetVendors(searchTerm);
+            return ToolInventoryRepo.GetVendors(searchTerm, categoryID);
         }
 
         [Route("GetVendorInfo/{ID}")]
