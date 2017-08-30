@@ -431,7 +431,11 @@ namespace MWWebAPI.DBRepository
                     cmd.Parameters.Add("@Grade", SqlDbType.NVarChar, 100).Value = toolInventorySaveRequest.Grade;                   
                     cmd.Parameters.Add("@ImageCode", SqlDbType.NVarChar, 40).Value = toolInventorySaveRequest.ImageCode;
                     cmd.Parameters.Add("@InventoryLevel", SqlDbType.Decimal).Value = toolInventorySaveRequest.InventoryLevel;
-                    cmd.Parameters.Add("@isLocked", SqlDbType.Bit).Value = Convert.ToInt16(toolInventorySaveRequest.isLocked);
+
+                    if (toolInventorySaveRequest.isLocked == "on")
+                        cmd.Parameters.Add("@isLocked", SqlDbType.Bit).Value = 1;
+                    else
+                        cmd.Parameters.Add("@isLocked", SqlDbType.Bit).Value = 0;
                     //cmd.Parameters.Add("@isSent", SqlDbType.Bit).Value = toolInventorySaveRequest.isSent;
                     cmd.Parameters.Add("@ItemNumber", SqlDbType.NVarChar, 100).Value = toolInventorySaveRequest.ItemNumber;
                     if (!string.IsNullOrEmpty(toolInventorySaveRequest.LBS))
@@ -472,7 +476,7 @@ namespace MWWebAPI.DBRepository
             return toolInventorySaveRequest.ID;
         }
 
-        public ToolInventorySearchResult CopyTool(int ToolID)
+        public int CopyTool(int ToolID)
         {
             ToolInventorySearchResult toolInventorySearchResult = new ToolInventorySearchResult();           
 
@@ -489,7 +493,7 @@ namespace MWWebAPI.DBRepository
                 }
             }
 
-            return GetToolDetails(ToolID);
+            return ToolID;
         }
         public ToolInventorySearchResult GetToolDetails(int ToolID)
         {

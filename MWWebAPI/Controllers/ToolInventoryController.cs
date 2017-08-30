@@ -304,10 +304,11 @@ namespace MWWebAPI.Controllers
             return ToolInventoryRepo.GetToolDetails(ToolID);
         }
 
-        [Route("CopyTool/{ToolID}")]
-        public ToolInventorySearchResult CopyTool(int ToolID)
+        [Route("CopyTool")]
+        [HttpPost]
+        public int CopyTool(ToolInventorySaveRequest copyToolRequest)
         {
-            return ToolInventoryRepo.CopyTool(ToolID);
+            return ToolInventoryRepo.CopyTool(copyToolRequest.ID);
         }
 
         [Route("CreateTool")]
