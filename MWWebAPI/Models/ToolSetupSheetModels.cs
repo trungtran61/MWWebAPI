@@ -336,6 +336,7 @@ namespace MWWebAPI.Models
         public string OAL { get; set; }
         public string POID { get; set; }
         public string ShankDiameter { get; set; }
+        public string NeckDiameter { get; set; }
         public string StationNumber { get; set; }
         public string OrderApproved { get; set; }
         public string Width { get; set; }
@@ -388,6 +389,7 @@ namespace MWWebAPI.Models
         public string OAL { get; set; }
         public string POID { get; set; }
         public string ShankDiameter { get; set; }
+        public string NeckDiameter { get; set; }
         public string StationNumber { get; set; }
         public string OrderApproved { get; set; }
         public string Width { get; set; }

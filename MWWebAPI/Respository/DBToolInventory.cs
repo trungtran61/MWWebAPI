@@ -460,6 +460,7 @@ namespace MWWebAPI.DBRepository
                         cmd.Parameters.Add("@POID", SqlDbType.Int).Value = toolInventorySaveRequest.POID;
                     cmd.Parameters.Add("@Radius", SqlDbType.NVarChar, 100).Value = toolInventorySaveRequest.Radius;
                     cmd.Parameters.Add("@ShankDiameter", SqlDbType.NVarChar, 100).Value = toolInventorySaveRequest.ShankDiameter;
+                    cmd.Parameters.Add("@NeckDiameter", SqlDbType.NVarChar, 100).Value = toolInventorySaveRequest.NeckDiameter;
                     cmd.Parameters.Add("@StationNumber", SqlDbType.VarChar, 20).Value = toolInventorySaveRequest.StationNumber;
                     cmd.Parameters.Add("@StatusID", SqlDbType.Int).Value = toolInventorySaveRequest.StatusID;
                     cmd.Parameters.Add("@ToolGroupNumber", SqlDbType.Int).Value = toolInventorySaveRequest.ToolGroupNumber;
@@ -534,6 +535,7 @@ namespace MWWebAPI.DBRepository
                             toolInventorySearchResult.FluteLength = reader["FluteLength"].ToString();
                             toolInventorySearchResult.OAL = reader["OAL"].ToString();
                             toolInventorySearchResult.ShankDiameter = reader["ShankDiameter"].ToString();
+                            toolInventorySearchResult.NeckDiameter = reader["NeckDiameter"].ToString();
                             toolInventorySearchResult.ChipBreaker = reader["ChipBreaker"].ToString();
                             toolInventorySearchResult.Material = reader["Material"].ToString();
                             toolInventorySearchResult.Grade = reader["Grade"].ToString();
